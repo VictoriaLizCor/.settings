@@ -53,20 +53,31 @@ settings:
 fetch-settings:
 	@git submodule update --remote
 	@echo "Submodule updated to the latest commit."
-update-settings:
-	@pwd
+update-settings:dirs
+	@echo $$pwd
 	@echo $(YELLOW) $$(git config --get remote.origin.url) $(E_NC)
 	@if [ "$$(pwd)" != "$(SETTINGS)" ]; then \
 		cd $(SETTINGS) && pwd; \
 	fi && \
-	echo $(CYAN) && git add $(SETTINGS) ;\
-	echo $(GREEN) && git commit -e ; \
+	$(MAKE) -C . git
+
+#@git add $(SETTINGS)
+
+#-------------------------VS Code
+.vscode:
+	@cp -r $(SETTINGS).vscode .
+
+gAdd:
+	@echo $(CYAN) && git add .
+gCommit:
+	@echo $(GREEN) && git commit -e ; \
 	ret=$$? ; \
 	if [ $$ret -ne 0 ]; then \
-		echo $(RED) "Error in commit message" && pwd; \
+		echo $(RED) "Error in commit message"; \
 		exit 1; \
-	fi ;\
-	echo $(YELLOW) && git push ; \
+	fi
+gPush:
+	@echo $(YELLOW) && git push ; \
 	ret=$$? ; \
 	if [ $$ret -ne 0 ]; then \
 		echo $(RED) "git push failed, setting upstream branch\n" $(YELLOW) && \
@@ -76,39 +87,14 @@ update-settings:
 		fi \
 	fi
 
-#@git add $(SETTINGS)
-
-#-------------------------VS Code
-.vscode:
-	@cp -r $(SETTINGS).vscode .
-
-# gAdd:
-# 	@echo $(CYAN) && git add $(ROOT_CPP_MODULES)
-# gCommit:
-# 	@echo $(GREEN) && git commit -e ; \
-# 	ret=$$? ; \
-# 	if [ $$ret -ne 0 ]; then \
-# 		echo $(RED) "Error in commit message"; \
-# 		exit 1; \
-# 	fi
-# gPush:
-# 	@echo $(YELLOW) && git push ; \
-# 	ret=$$? ; \
-# 	if [ $$ret -ne 0 ]; then \
-# 		echo $(RED) "git push failed, setting upstream branch\n" $(YELLOW) && \
-# 		git push --set-upstream origin $(shell git branch --show-current) || \
-# 		if [ $$? -ne 0 ]; then \
-# 			echo $(RED) "git push --set-upstream failed with error" $(E_NC); \
-# 		fi \
-# 	fi
-# git: cleanAll gAdd
-# 	@$(MAKE) -C . gCommit; \
-# 	ret=$$?; \
-# 	if [ $$ret -ne 0 ]; then \
-# 		exit 1; \
-# 	else \
-# 		$(MAKE) -C . gPush; \
-# 	fi
+git: gAdd
+	@$(MAKE) -C . gCommit; \
+	ret=$$?; \
+	if [ $$ret -ne 0 ]; then \
+		exit 1; \
+	else \
+		$(MAKE) -C . gPush; \
+	fi
 
 # quick: cleanAll
 # 	@echo $(GREEN) && git commit -am "* Update in files: "; \
