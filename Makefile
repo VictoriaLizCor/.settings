@@ -3,6 +3,7 @@ SETTINGS := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)/.settings/
 include $(SETTINGS)/colors.mk
 CURRENT_PATH := $(PWD)
 HOOKS := $(SETTINGS)gitHooks/
+SETTINGS-HOOKS := $(shell git config --file $(GIT_REPO).gitmodules --get-regexp path)
 SETTINGS-GIT-HOOKS := $(shell git config --file $(GIT_REPO).gitmodules --get-regexp path | awk '{ print $$2 }')
 GIT-HOOKS := $(GIT_REPO).git/hooks/
 
@@ -48,18 +49,19 @@ post-merge:
 set-hooks: pre-commit commit-msg post-merge
 #------------------------- submodules
 settings:
-	@echo $(YELLOW) $(SETTINGS-GIT-HOOKS) $(E_NC)
+	@echo $(YELLOW) $(SETTINGS-HOOKS) $(E_NC)
+	@echo Git-hooks: $(CYAN) $(GIT-HOOKS) $(E_NC)
 	@echo $(shell git config --file $(GIT_REPO).gitmodules --get-regexp path | awk '{ print $$2 }')
 fetch-settings:
 	@git submodule update --remote
 	@echo "Submodule updated to the latest commit."
-update-settings:dirs
+update-settings:
 	@echo $$pwd
 	@echo $(YELLOW) $$(git config --get remote.origin.url) $(E_NC)
 	@if [ "$$(pwd)" != "$(SETTINGS)" ]; then \
 		cd $(SETTINGS) && pwd; \
 	fi && \
-	$(MAKE) -C . git
+	$(MAKE) . git
 
 #@git add $(SETTINGS)
 
@@ -87,8 +89,8 @@ gPush:
 		fi \
 	fi
 
-git: gAdd
-	@$(MAKE) -C . gCommit; \
+git:  $(PWD)
+	@$(MAKE) -C . gAdd gCommit; \
 	ret=$$?; \
 	if [ $$ret -ne 0 ]; then \
 		exit 1; \
