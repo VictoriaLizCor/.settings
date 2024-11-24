@@ -63,14 +63,22 @@ else
 		printf "%s\n%s\n" "$ticketID" "${LINES[0]}" "${LINES[@]:1}" > "$COMMIT_MSG_FILE"
 	fi
 fi
+# --------------------------------------------------------------------
+# Check if the repository has submodules and if there are changes in the submodules
+if git submodule status &> /dev/null; then
+	if [ -n "$(git diff --submodule)" ]; then
+		SUBMODULE_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+		echo -e "\nSubmodule changes:\n$SUBMODULE_COMMIT_MESSAGE" >> "$COMMIT_MSG_FILE"
+	fi
+fi
 
-# ----------------------------------------------------------------------------------
+# --------------------------------------------------------------------
 # Append the list of modified files at the end
 echo -e "\n\t-Modified files:" >> "$COMMIT_MSG_FILE"
 git diff --cached --name-only | awk '{print "\t\t" $0}' >> "$COMMIT_MSG_FILE"
 
 
-# ----------------------------------------------------------------------------------
+# --------------------------------------------------------------------
 # This script is a Git hook for preparing commit messages.
 # It performs the following actions:
 # 1. Retrieves the remote URL of the current repository.

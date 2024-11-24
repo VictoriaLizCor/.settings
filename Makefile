@@ -5,7 +5,7 @@ CURRENT_PATH := $(PWD)/
 HOOKS := $(SETTINGS)gitHooks/
 
 # check if .git is a folder(main repo) o file(submodule)
-ifneq ($(shell test -f .settings && echo yes),)
+ifneq ($(shell test -f .git && echo yes),)
 SETTINGS-HOOKS := $(realpath $(shell cat .git | awk '{ print $2 }'))/hooks
 endif
 
@@ -25,7 +25,6 @@ dirs:
 
 settings:
 	@echo $(YELLOW) $(SETTINGS-HOOKS) $(E_NC)
-	@echo $(YELLOW) $(SETTINGS-GIT-HOOKS) $(E_NC)
 	@echo Git-hooks: $(CYAN) $(GIT-HOOKS) $(E_NC)
 	@echo Git-repo: $(CYAN) $(GIT_REPO) $(E_NC)
 	@echo $(RED) $$(cat .git | awk '{ print $$2 }') $(E_NC)
@@ -40,46 +39,56 @@ commit-template:
 	@echo "commit-msg hook installed."
 
 pre-commit:
-	@hooks=$(GIT-HOOKS); \
+	@file="prepare-commit-msg"; \
+	hooks=$(GIT-HOOKS); \
+	toSet=$$(echo $$hooks/$$file | awk -F'/' '{print $$(NF-3)"/"$$(NF-2)"/"$$(NF-1)"/"$$NF}'); \
 	if [ "$(CURRENT_PATH)" = "$(SETTINGS)" ]; then \
 		hooks=$(SETTINGS-HOOKS); \
+		toSet=$$(echo $$hooks/$$file | awk -F'/' '{print $$(NF-4)"/"$$(NF-3)"/"$$(NF-2)"/"$$(NF-1)"/"$$NF}'); \
 	fi; \
-	echo Setting:$(PURPLE) $$hooks $(E_NC); \
-	cp $(HOOKS)prepare-commit-msg $$hooks; \
-	chmod +x $$hooks/prepare-commit-msg; \
+	echo Setting:$(PURPLE) $$toSet $(E_NC); \
+	cp $(HOOKS)$$file $$hooks; \
+	chmod +x $$hooks/$$file; \
 	if [ $$? -ne 0 ]; then \
-		echo $(RED)"Error: prepare-commit-msg hook not installed"$(E_NC); \
+		echo $(RED)"Error: $$file hook not installed"$(E_NC); \
 		exit 1; \
 	fi; \
-	echo $(GREEN)"prepare-commit-msg hook installed."$(E_NC)
+	echo $(GREEN)"$$file hook installed."$(E_NC)
+
 
 commit-msg:
-	@hooks=$(GIT-HOOKS); \
+	@file="commit-msg"; \
+	hooks=$(GIT-HOOKS); \
+	toSet=$$(echo $$hooks/$$file | awk -F'/' '{print $$(NF-3)"/"$$(NF-2)"/"$$(NF-1)"/"$$NF}'); \
 	if [ "$(CURRENT_PATH)" = "$(SETTINGS)" ]; then \
 		hooks=$(SETTINGS-HOOKS); \
+		toSet=$$(echo $$hooks/$$file | awk -F'/' '{print $$(NF-4)"/"$$(NF-3)"/"$$(NF-2)"/"$$(NF-1)"/"$$NF}'); \
 	fi; \
-	echo Setting:$(PURPLE) $$hooks $(E_NC); \
-	cp $(HOOKS)commit-msg $$hooks; \
-	chmod +x $$hooks/commit-msg; \
+	echo Setting:$(PURPLE) $$toSet $(E_NC); \
+	cp $(HOOKS)$$file $$hooks; \
+	chmod +x $$hooks/$$file; \
 	if [ $$? -ne 0 ]; then \
-		echo $(RED)"Error: commit-msg hook not installed"$(E_NC); \
+		echo $(RED)"Error: $$file hook not installed"$(E_NC); \
 		exit 1; \
 	fi; \
-	echo $(GREEN)"commit-msg hook installed."$(E_NC)
+	echo $(GREEN)"$$file hook installed."$(E_NC)
 
 post-merge:
-	@hooks=$(GIT-HOOKS); \
+	@file="post-merge"; \
+	hooks=$(GIT-HOOKS); \
+	toSet=$$(echo $$hooks/$$file | awk -F'/' '{print $$(NF-3)"/"$$(NF-2)"/"$$(NF-1)"/"$$NF}'); \
 	if [ "$(CURRENT_PATH)" = "$(SETTINGS)" ]; then \
 		hooks=$(SETTINGS-HOOKS); \
+		toSet=$$(echo $$hooks/$$file | awk -F'/' '{print $$(NF-4)"/"$$(NF-3)"/"$$(NF-2)"/"$$(NF-1)"/"$$NF}'); \
 	fi; \
-	echo Setting:$(PURPLE) $$hooks $(E_NC); \
-	cp $(HOOKS)post-merge $$hooks; \
-	chmod +x $$hooks/post-merge; \
+	echo Setting:$(PURPLE) $$toSet $(E_NC); \
+	cp $(HOOKS)$$file $$hooks; \
+	chmod +x $$hooks/$$file; \
 	if [ $$? -ne 0 ]; then \
-		echo $(RED)"Error: post-merge hook not installed"$(E_NC); \
+		echo $(RED)"Error: $$file hook not installed"$(E_NC); \
 		exit 1; \
 	fi; \
-	echo $(GREEN)"post-merge hook installed."$(E_NC)
+	echo $(GREEN)"$$file hook installed."$(E_NC)
 
 show-pwd:
 	@echo PWD:$(YELLOW) $(CURRENT_PATH) $(E_NC)
@@ -89,6 +98,7 @@ set-hooks: show-pwd pre-commit commit-msg post-merge
 fetch-settings:
 	@git submodule update --remote
 	@echo "Submodule updated to the latest commit."
+
 update-settings: show-pwd
 	@if [ "$(CURRENT_PATH)" != "$(SETTINGS)" ]; then \
 		cd $(SETTINGS); \
@@ -126,6 +136,7 @@ git-sub:
 		echo "Checking if submodule was modified..."; \
 		if [ -n "$$(git diff --submodule)" ]; then \
 			$(MAKE) -C . update-settings; \
+			cd -; \
 			SUBMODULE_COMMIT_MESSAGE=$$(git log -1 --pretty=%B); \
 			echo "$$SUBMODULE_COMMIT_MESSAGE" && cd - > /dev/null; \
 		fi \
