@@ -67,7 +67,7 @@ fi
 # ----------------------------------------------------------------------------------
 # Append the list of modified files at the end
 echo -e "\n\t-Modified files:" >> "$COMMIT_MSG_FILE"
-git diff --cached --name-only | awk '{print "\t" $0}' >> "$COMMIT_MSG_FILE"
+git diff --cached --name-only | awk '{print "\t\t" $0}' >> "$COMMIT_MSG_FILE"
 
 
 # ----------------------------------------------------------------------------------
