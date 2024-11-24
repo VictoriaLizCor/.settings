@@ -68,8 +68,9 @@ fi
 SUBMODULE_COMMIT_MESSAGE=""
 #git submodule foreac
 if [ -n "$(git submodule foreach)" ]; then
-	echo "sunmodule exist!"
-	SUBMODULE_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+	echo "submodule exist!"
+	cd .settings
+	SUBMODULE_COMMIT_MESSAGE=$(git log -1 --pretty=%B) && cd -
 	echo -e "\nSubmodule changes:\n$SUBMODULE_COMMIT_MESSAGE" >> "$COMMIT_MSG_FILE"
 fi
 echo -e "$SUBMODULE_COMMIT_MESSAGE test"
