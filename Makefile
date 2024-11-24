@@ -90,11 +90,10 @@ fetch-settings:
 	@git submodule update --remote
 	@echo "Submodule updated to the latest commit."
 update-settings: show-pwd
-	@echo $(YELLOW) $$(git config --get remote.origin.url) $(E_NC)
 	@if [ "$(CURRENT_PATH)" != "$(SETTINGS)" ]; then \
 		cd $(SETTINGS); \
 	fi && \
-	$(MAKE) . git
+	$(MAKE) -C . git
 
 #@git add $(SETTINGS)
 
@@ -126,13 +125,13 @@ git-sub:
 	@if [ "$(CURRENT_PATH)" != "$(SETTINGS)" ]; then \
 		echo "Checking if submodule was modified..."; \
 		if [ -n "$$(git diff --submodule)" ]; then \
-			$(MAKE) . update-settings; \
+			$(MAKE) -C . update-settings; \
 			SUBMODULE_COMMIT_MESSAGE=$$(git log -1 --pretty=%B); \
 			echo "$$SUBMODULE_COMMIT_MESSAGE" && cd - > /dev/null; \
 		fi \
 	fi
-git: show-pwd git-sub
-	@$(MAKE) -C . gAdd gCommit; \
+git: show-pwd
+	@$(MAKE) -C . git-sub gAdd gCommit; \
 	ret=$$?; \
 	if [ $$ret -ne 0 ]; then \
 		exit 1; \
