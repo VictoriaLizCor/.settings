@@ -68,7 +68,7 @@ fi
 SUBMODULE_COMMIT_MESSAGE=""
 if git submodule status &> /dev/null; then
 	if [ -n "$(git diff --submodule)" ]; then
-		SUBMODULE_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+		SUBMODULE_COMMIT_MESSAGE=$(git submodule foreach 'git log -1 --pretty=%B')
 		echo -e "\nSubmodule changes:\n$SUBMODULE_COMMIT_MESSAGE" >> "$COMMIT_MSG_FILE"
 	fi
 fi
