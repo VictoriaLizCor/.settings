@@ -6,12 +6,12 @@ message=$(cat "$COMMIT_MSG_FILE")
 
 branchName=$(git symbolic-ref --short HEAD)
 repo=$(basename -s .git $(git remote get-url origin))
-echo $branchName
+
 # The Ticket ID prefix you want to include to your commit messages.
 BranchTicket1=$(git symbolic-ref --short HEAD | sed -nE 's,([A-Z]?-?[0-9]+)-.+,\1,p')
 BranchTicket2=$(git symbolic-ref --short HEAD | sed -nE 's,.+-([0-9]+),\1,p')
-echo $BranchTicket1
-echo $BranchTicket2
+
+# creating title for commit message: [ft_irc/main]
 if [ -z "$BranchTicket1" ] || [ -z "$BranchTicket2" ]; then
 	ticketID=$(echo "[$repo/$branchName]")
 else
@@ -40,23 +40,82 @@ if [ -f .git/MERGE_HEAD ]; then
 fi
 
 # Modify the commit message
+# This script is a Git hook that prepares the commit message.
+# It is located at /home/lilizarr/42_Cursus/ft_irc/.settings/gitHooks/prepare-commit-msg.
+# 
+# The script checks the number of lines in the LINES array.
+# If there is only one line:
+#   - If the mergeBranch variable is set, it writes the ticketID, mergeBranch, and the single line from LINES to the commit message file.
+#   - If the mergeBranch variable is not set, it writes the ticketID and the single line from LINES to the commit message file.
+# If there are multiple lines:
+#   - If the mergeBranch variable is set, it writes the ticketID, mergeBranch, and all lines from LINES to the commit message file.
+#   - If the mergeBranch variable is not set, it writes the ticketID, the first line from LINES, and the remaining lines from LINES to the commit message file.
 if [ "${#LINES[@]}" -eq 1 ]; then
 	if [ -n "$mergeBranch" ]; then
 		echo -e "$ticketID\n$mergeBranch\n${LINES[0]}" > "$COMMIT_MSG_FILE"
 	else
-		len=$((${#LINES[0]} + 1))
-		modified_files=$(git diff --cached --name-only --diff-filter=M | \
-		awk -v len="$len" 'NR > 1 {print prev","; for(i=0;i<len;i++) printf " "} {prev=$0} END {print $0}')
-		printf "%s\n%s %s\n" "$ticketID" "${LINES[0]}" "$modified_files" > "$COMMIT_MSG_FILE"
+		printf "%s\n%s %s\n" "$ticketID" "${LINES[0]}" > "$COMMIT_MSG_FILE"
 	fi
 else
 	if [ -n "$mergeBranch" ]; then
-		printf "%s\n%s %s\n" "$ticketID" "$mergeBranch" "${LINES[@]}"> "$COMMIT_MSG_FILE"
+		printf "%s\n%s %s\n" "$ticketID" "$mergeBranch" "${LINES[@]}" > "$COMMIT_MSG_FILE"
 	else
-		printf "%s\n" "$ticketID" "${LINES[0]}" "${LINES[@]:1}" > "$COMMIT_MSG_FILE"
+		printf "%s\n%s\n" "$ticketID" "${LINES[0]}" "${LINES[@]:1}" > "$COMMIT_MSG_FILE"
 	fi
 fi
-regex_pattern="~ Autor: Victoria Lizarraga (@VictoriaLizCor / @lilizarr) ~"
-if [[ ! $message =~ $regex_pattern ]]; then
-	echo "~ Autor: Victoria Lizarraga (@VictoriaLizCor / @lilizarr) ~" >> "$COMMIT_MSG_FILE"
+
+# ----------------------------------------------------------------------------------
+# Append the list of modified files at the end
+echo -e "\n* Modified files:" >> "$COMMIT_MSG_FILE"
+git diff --cached --name-only | awk '{print "\t" $0}' >> "$COMMIT_MSG_FILE"
+
+
+# ----------------------------------------------------------------------------------
+# This script is a Git hook for preparing commit messages.
+# It performs the following actions:
+# 1. Retrieves the remote URL of the current repository.
+# 2. Extracts the repository owner and name from the remote URL.
+# 3. Gets the current user's GitHub username from Git configuration.
+# 4. Checks if the repository is a fork by querying the GitHub API.
+# 5. Prints a message indicating whether the repository is forked or not.
+# 6. Checks if the current user is the owner of the repository.
+# 7. If the user is the owner or a specific user ("lilizarr"), it appends a specific author pattern to the commit message.
+# 8. If the user is not the owner, it appends a generic author pattern with the user's GitHub username to the commit message.
+# Get the current repository's remote URL
+REMOTE_URL=$(git config --get remote.origin.url)
+
+# Extract the repository owner and name from the remote URL
+REPO_OWNER=$(echo "$REMOTE_URL" | sed -n 's#.*/\([^/]*\)/\([^/]*\)\.git#\1#p')
+REPO_NAME=$(echo "$REMOTE_URL" | sed -n 's#.*/\([^/]*\)/\([^/]*\)\.git#\2#p')
+
+# Get the current user's GitHub username
+USER_NAME=$(git config --get user.name)
+
+# Check if the repository is a fork
+IS_FORK=$(curl -s "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME" | jq '.fork')
+
+if [ "$IS_FORK" = "true" ]; then
+	echo "This is a forked repository."
+	# Handle forked repository logic here
+else
+	echo "This is not a forked repository."
+	# Handle non-forked repository logic here
 fi
+
+# Check if the current user is the owner of the repository
+if [ "$USER_NAME" = "$REPO_OWNER" ] || [ "$USER_NAME" = "lilizarr" ]; then
+	regex_pattern="~ Autor: Victoria Lizarraga (@VictoriaLizCor / @lilizarr) ~"
+	if [[ ! $message =~ $regex_pattern ]]; then
+		echo $regex_pattern >> "$COMMIT_MSG_FILE"
+fi
+else
+	regex_pattern="~ Autor: @$USER_NAME ~" >> "$COMMIT_MSG_FILE"
+fi
+# echo -e "~ Autor: @$USER_NAME ~"
+# echo $IS_FORK
+# echo $REMOTE_URL
+# echo $REPO_NAME
+# echo $USER_NAME
+# echo $REPO_OWNER
+
+
