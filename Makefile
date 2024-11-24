@@ -128,8 +128,7 @@ git-sub:
 		if [ -n "$$(git diff --submodule)" ]; then \
 			$(MAKE) . update-settings; \
 			SUBMODULE_COMMIT_MESSAGE=$$(git log -1 --pretty=%B); \
-			echo "$$SUBMODULE_COMMIT_MESSAGE"; \
-			cd - > /dev/null; \
+			echo "$$SUBMODULE_COMMIT_MESSAGE" && cd - > /dev/null; \
 		fi \
 	fi
 git: show-pwd git-sub
