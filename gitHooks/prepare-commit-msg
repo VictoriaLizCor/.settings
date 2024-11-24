@@ -63,6 +63,10 @@ else
 		printf "%s\n%s\n" "$ticketID" "${LINES[0]}" "${LINES[@]:1}" > "$COMMIT_MSG_FILE"
 	fi
 fi
+--------------------------------------------------------------------
+# Append the list of modified files at the end
+echo -e "\n\t-Modified files:" >> "$COMMIT_MSG_FILE"
+git diff --cached --name-only | awk '{print "\t\t" $0}' >> "$COMMIT_MSG_FILE"
 # -------------------------------------------------------------------
 # Check if the repository has submodules and if there are changes in the submodules
 SUBMODULE_COMMIT_MESSAGE=""
@@ -70,15 +74,11 @@ SUBMODULE_COMMIT_MESSAGE=""
 if [ -n "$(git submodule foreach)" ]; then
 	echo "submodule exist!"
 	cd .settings
-	SUBMODULE_COMMIT_MESSAGE=$(git log -1 --pretty=%B) && cd -
+	SUBMODULE_COMMIT_MESSAGE=$(git log -1 --pretty=%B | awk '{print "\t\t" $0}') && cd -
 	echo -e "\nSubmodule changes:\n$SUBMODULE_COMMIT_MESSAGE" >> "$COMMIT_MSG_FILE"
 fi
 echo -e "$SUBMODULE_COMMIT_MESSAGE test"
-# --------------------------------------------------------------------
-# Append the list of modified files at the end
-echo -e "\n\t-Modified files:" >> "$COMMIT_MSG_FILE"
-git diff --cached --name-only | awk '{print "\t\t" $0}' >> "$COMMIT_MSG_FILE"
-
+# 
 
 # --------------------------------------------------------------------
 # This script is a Git hook for preparing commit messages.
