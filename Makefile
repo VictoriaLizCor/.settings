@@ -91,7 +91,7 @@ fetch-settings:
 	@echo "Submodule updated to the latest commit."
 update-settings: show-pwd
 	@echo $(YELLOW) $$(git config --get remote.origin.url) $(E_NC)
-	@if [ "$$(pwd)" != "$(SETTINGS)" ]; then \
+	@if [ "$(CURRENT_PATH)" != "$(SETTINGS)" ]; then \
 		cd $(SETTINGS); \
 	fi && \
 	$(MAKE) . git
@@ -121,15 +121,18 @@ gPush:
 			echo $(RED) "git push --set-upstream failed with error" $(E_NC); \
 		fi \
 	fi
+
 git-sub:
-	@echo "Checking if submodule was modified..."
-	@if [ -n "$$(git diff --submodule)" ]; then \
-		$(MAKE) . update-settings; \
-		SUBMODULE_COMMIT_MESSAGE=$$(git log -1 --pretty=%B); \
-		echo "$$SUBMODULE_COMMIT_MESSAGE"; \
-		cd - > /dev/null; \
+	@if [ "$(CURRENT_PATH)" != "$(SETTINGS)" ]; then \
+		echo "Checking if submodule was modified..."; \
+		if [ -n "$$(git diff --submodule)" ]; then \
+			$(MAKE) . update-settings; \
+			SUBMODULE_COMMIT_MESSAGE=$$(git log -1 --pretty=%B); \
+			echo "$$SUBMODULE_COMMIT_MESSAGE"; \
+			cd - > /dev/null; \
+		fi \
 	fi
-git: show-pwd
+git: show-pwd git-sub
 	@$(MAKE) -C . gAdd gCommit; \
 	ret=$$?; \
 	if [ $$ret -ne 0 ]; then \
