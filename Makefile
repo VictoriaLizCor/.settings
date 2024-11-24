@@ -3,7 +3,11 @@ SETTINGS := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)/.settings/
 include $(SETTINGS)/colors.mk
 CURRENT_PATH := $(PWD)/
 HOOKS := $(SETTINGS)gitHooks/
+
+# check if .git is a folder(main repo) o file(submodule)
+ifneq ($(shell test -f .settings && echo yes),)
 SETTINGS-HOOKS := $(realpath $(shell cat .git | awk '{ print $2 }'))/hooks
+endif
 
 GIT-HOOKS := $(GIT_REPO).git/hooks
 
@@ -79,16 +83,16 @@ post-merge:
 
 show-pwd:
 	@echo PWD:$(YELLOW) $(CURRENT_PATH) $(E_NC)
+
 set-hooks: show-pwd pre-commit commit-msg post-merge
 #------------------------- submodules
 fetch-settings:
 	@git submodule update --remote
 	@echo "Submodule updated to the latest commit."
-update-settings:
-	@echo $$pwd
+update-settings: show-pwd
 	@echo $(YELLOW) $$(git config --get remote.origin.url) $(E_NC)
 	@if [ "$$(pwd)" != "$(SETTINGS)" ]; then \
-		cd $(SETTINGS) && pwd; \
+		cd $(SETTINGS); \
 	fi && \
 	$(MAKE) . git
 
@@ -117,8 +121,15 @@ gPush:
 			echo $(RED) "git push --set-upstream failed with error" $(E_NC); \
 		fi \
 	fi
-
-git:  $(PWD)
+git-sub:
+	@echo "Checking if submodule was modified..."
+	@if [ -n "$$(git diff --submodule)" ]; then \
+		$(MAKE) . update-settings; \
+		SUBMODULE_COMMIT_MESSAGE=$$(git log -1 --pretty=%B); \
+		echo "$$SUBMODULE_COMMIT_MESSAGE"; \
+		cd - > /dev/null; \
+	fi
+git: show-pwd
 	@$(MAKE) -C . gAdd gCommit; \
 	ret=$$?; \
 	if [ $$ret -ne 0 ]; then \
