@@ -63,15 +63,14 @@ else
 		printf "%s\n%s\n" "$ticketID" "${LINES[0]}" "${LINES[@]:1}" > "$COMMIT_MSG_FILE"
 	fi
 fi
-# --------------------------------------------------------------------
+# -------------------------------------------------------------------
 # Check if the repository has submodules and if there are changes in the submodules
 SUBMODULE_COMMIT_MESSAGE=""
-if git submodule status &> /dev/null; then
+#git submodule foreac
+if [ -n "$(git submodule foreach)" ]; then
 	echo "sunmodule exist!"
-	if [ -n "$(git diff --submodule)" ]; then
-		SUBMODULE_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-		echo -e "\nSubmodule changes:\n$SUBMODULE_COMMIT_MESSAGE" >> "$COMMIT_MSG_FILE"
-	fi
+	SUBMODULE_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+	echo -e "\nSubmodule changes:\n$SUBMODULE_COMMIT_MESSAGE" >> "$COMMIT_MSG_FILE"
 fi
 echo -e "$SUBMODULE_COMMIT_MESSAGE test"
 # --------------------------------------------------------------------
