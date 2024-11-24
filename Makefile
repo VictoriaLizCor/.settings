@@ -1,12 +1,16 @@
 GIT_REPO :=$(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)/
 SETTINGS := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)/.settings/
 include $(SETTINGS)/colors.mk
-CURRENT_PATH := $(PWD)
+CURRENT_PATH := $(PWD)/
 HOOKS := $(SETTINGS)gitHooks/
-SETTINGS-HOOKS := $(shell git config --file $(GIT_REPO).gitmodules --get-regexp path)
-SETTINGS-GIT-HOOKS := $(shell git config --file $(GIT_REPO).gitmodules --get-regexp path | awk '{ print $$2 }')
-GIT-HOOKS := $(GIT_REPO).git/hooks/
+SETTINGS-HOOKS := $(realpath $(shell cat .git | awk '{ print $2 }'))/hooks
 
+GIT-HOOKS := $(GIT_REPO).git/hooks
+
+### Maybe use for branches
+#@for subdir in $$(find $(DIRS) -type d -name "ex0*" | sort); do \
+	echo "\t"$(GRAY) $$subdir $(E_NC); \
+	done;
 dirs:
 	@echo $(shell pwd)
 	@echo GIT_REPO: $(GREEN) $(GIT_REPO) $(E_NC)
@@ -14,9 +18,14 @@ dirs:
 	@echo Git-hooks: $(YELLOW) $(GIT-HOOKS) $(E_NC)
 	@echo ROOT_CPP_MODULES: $(CYAN) $(ROOT_CPP_MODULES) $(E_NC)
 	@echo DIRS: $(BOLD) $(DIRS) $(E_NC)
-	@for subdir in $$(find $(DIRS) -type d -name "ex0*" | sort); do \
-		echo "\t"$(GRAY) $$subdir $(E_NC); \
-	done;
+
+settings:
+	@echo $(YELLOW) $(SETTINGS-HOOKS) $(E_NC)
+	@echo $(YELLOW) $(SETTINGS-GIT-HOOKS) $(E_NC)
+	@echo Git-hooks: $(CYAN) $(GIT-HOOKS) $(E_NC)
+	@echo Git-repo: $(CYAN) $(GIT_REPO) $(E_NC)
+	@echo $(RED) $$(cat .git | awk '{ print $$2 }') $(E_NC)
+
 .gitconfig:
 	@git config --local --list
 show-commit-msg:
@@ -27,31 +36,51 @@ commit-template:
 	@echo "commit-msg hook installed."
 
 pre-commit:
-	@echo $(CURRENT_PATH)
-	@hooks=0; 
-	@if [ "$$(pwd)" == "$(SETTINGS)" ]; then \
-		hooks=$()
-	@echo $(GIT-HOOKS)
-	@cp $(HOOKS)prepare-commit-msg $(GIT-HOOKS)
-	@chmod +x $(GIT-HOOKS)prepare-commit-msg
-	@echo "prepare-commit-msg hook installed."
+	@hooks=$(GIT-HOOKS); \
+	if [ "$(CURRENT_PATH)" = "$(SETTINGS)" ]; then \
+		hooks=$(SETTINGS-HOOKS); \
+	fi; \
+	echo Setting:$(PURPLE) $$hooks $(E_NC); \
+	cp $(HOOKS)prepare-commit-msg $$hooks; \
+	chmod +x $$hooks/prepare-commit-msg; \
+	if [ $$? -ne 0 ]; then \
+		echo $(RED)"Error: prepare-commit-msg hook not installed"$(E_NC); \
+		exit 1; \
+	fi; \
+	echo $(GREEN)"prepare-commit-msg hook installed."$(E_NC)
 
 commit-msg:
-	@cp $(HOOKS)commit-msg $(GIT-HOOKS)
-	@chmod +x $(GIT-HOOKS)commit-msg
-	@echo "commit-msg hook installed."
+	@hooks=$(GIT-HOOKS); \
+	if [ "$(CURRENT_PATH)" = "$(SETTINGS)" ]; then \
+		hooks=$(SETTINGS-HOOKS); \
+	fi; \
+	echo Setting:$(PURPLE) $$hooks $(E_NC); \
+	cp $(HOOKS)commit-msg $$hooks; \
+	chmod +x $$hooks/commit-msg; \
+	if [ $$? -ne 0 ]; then \
+		echo $(RED)"Error: commit-msg hook not installed"$(E_NC); \
+		exit 1; \
+	fi; \
+	echo $(GREEN)"commit-msg hook installed."$(E_NC)
 
 post-merge:
-	@cp $(HOOKS)post-merge $(GIT-HOOKS)
-	@chmod +x $(GIT-HOOKS)post-merge
-	@echo "post-merge hook installed."
+	@hooks=$(GIT-HOOKS); \
+	if [ "$(CURRENT_PATH)" = "$(SETTINGS)" ]; then \
+		hooks=$(SETTINGS-HOOKS); \
+	fi; \
+	echo Setting:$(PURPLE) $$hooks $(E_NC); \
+	cp $(HOOKS)post-merge $$hooks; \
+	chmod +x $$hooks/post-merge; \
+	if [ $$? -ne 0 ]; then \
+		echo $(RED)"Error: post-merge hook not installed"$(E_NC); \
+		exit 1; \
+	fi; \
+	echo $(GREEN)"post-merge hook installed."$(E_NC)
 
-set-hooks: pre-commit commit-msg post-merge
+show-pwd:
+	@echo PWD:$(YELLOW) $(CURRENT_PATH) $(E_NC)
+set-hooks: show-pwd pre-commit commit-msg post-merge
 #------------------------- submodules
-settings:
-	@echo $(YELLOW) $(SETTINGS-HOOKS) $(E_NC)
-	@echo Git-hooks: $(CYAN) $(GIT-HOOKS) $(E_NC)
-	@echo $(shell git config --file $(GIT_REPO).gitmodules --get-regexp path | awk '{ print $$2 }')
 fetch-settings:
 	@git submodule update --remote
 	@echo "Submodule updated to the latest commit."

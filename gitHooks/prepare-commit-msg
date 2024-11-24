@@ -5,13 +5,15 @@ COMMIT_MSG_FILE=$1
 message=$(cat "$COMMIT_MSG_FILE")
 
 branchName=$(git symbolic-ref --short HEAD)
-echo branchName
+repo=$(basename -s .git $(git remote get-url origin))
+echo $branchName
 # The Ticket ID prefix you want to include to your commit messages.
 BranchTicket1=$(git symbolic-ref --short HEAD | sed -nE 's,([A-Z]?-?[0-9]+)-.+,\1,p')
 BranchTicket2=$(git symbolic-ref --short HEAD | sed -nE 's,.+-([0-9]+),\1,p')
-
+echo $BranchTicket1
+echo $BranchTicket2
 if [ -z "$BranchTicket1" ] || [ -z "$BranchTicket2" ]; then
-	ticketID=$(echo "[$branchName]")
+	ticketID=$(echo "[$repo/$branchName]")
 else
 	ticketID=$(echo "[$BranchTicket1-$BranchTicket2]")
 fi
