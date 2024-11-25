@@ -130,7 +130,7 @@ gPush:
 			echo $(RED) "git push --set-upstream failed with error" $(E_NC); \
 		fi \
 	fi
-#test
+#tes
 git-sub:
 	@if [ "$(CURRENT_PATH)" != "$(SETTINGS)" ]; then \
 		echo "Checking if submodule was modified..."; \

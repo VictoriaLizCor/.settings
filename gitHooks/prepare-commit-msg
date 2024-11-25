@@ -104,13 +104,13 @@ USER_NAME=$(git config --get user.name)
 # Check if the repository is a fork
 IS_FORK=$(curl -s "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME" | jq '.fork')
 
-if [ "$IS_FORK" = "true" ]; then
-	echo "This is a forked repository."
-	# Handle forked repository logic here
-else
-	echo "This is not a forked repository."
-	# Handle non-forked repository logic here
-fi
+# if [ "$IS_FORK" = "true" ]; then
+# 	echo "This is a forked repository."
+# 	# Handle forked repository logic here
+# else
+# 	echo "This is not a forked repository."
+# 	# Handle non-forked repository logic here
+# fi
 
 # Check if the current user is the owner of the repository
 if [ "$USER_NAME" = "$REPO_OWNER" ] || [ "$USER_NAME" = "lilizarr" ]; then
@@ -121,11 +121,11 @@ fi
 else
 	regex_pattern="~ Autor: @$USER_NAME ~" >> "$COMMIT_MSG_FILE"
 fi
-# echo -e "~ Autor: @$USER_NAME ~"
-# echo $IS_FORK
-# echo $REMOTE_URL
-# echo $REPO_NAME
-# echo $USER_NAME
-# echo $REPO_OWNER
+echo -e "~ Autor: @$USER_NAME ~"
+echo $IS_FORK
+echo $REMOTE_URL
+echo $REPO_NAME
+echo $USER_NAME
+echo $REPO_OWNER
 
 
