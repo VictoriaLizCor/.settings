@@ -136,7 +136,6 @@ git-sub:
 		echo "Checking if submodule was modified..."; \
 		if [ -n "$$(git diff --submodule)" ]; then \
 			$(MAKE) -C . update-settings; \
-			cd -; \
 			SUBMODULE_COMMIT_MESSAGE=$$(git log -1 --pretty=%B); \
 			echo "$$SUBMODULE_COMMIT_MESSAGE" && cd - > /dev/null; \
 		fi \
