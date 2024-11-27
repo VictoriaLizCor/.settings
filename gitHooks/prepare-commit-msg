@@ -74,7 +74,7 @@ SUBMODULE_COMMIT_MESSAGE=""
 if [ -n "$(git submodule foreach)" ]; then
 	echo "submodule exist!"
 	cd .settings
-	SUBMODULE_COMMIT_MESSAGE=$(git log -1 --pretty=%B | awk '{print "\t\t" $0}') && cd -
+	SUBMODULE_COMMIT_MESSAGE=$(git log -1 --pretty=%B | awk '{print "\t\t" $0}') && cd ..
 	echo -e "\nSubmodule changes:\n$SUBMODULE_COMMIT_MESSAGE" >> "$COMMIT_MSG_FILE"
 fi
 echo -e "$SUBMODULE_COMMIT_MESSAGE test"
