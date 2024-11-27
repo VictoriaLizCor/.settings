@@ -1,15 +1,18 @@
-GIT_REPO :=$(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)/
+PROJECT_ROOT :=$(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)/
 SETTINGS := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)/.settings/
 include $(SETTINGS)/colors.mk
 CURRENT_PATH := $(PWD)/
 HOOKS := $(SETTINGS)gitHooks/
+#make -p -f Makefile | grep -E '^[a-zA-Z0-9_-]+:'
 
 # check if .git is a folder(main repo) o file(submodule)
 ifneq ($(shell test -f .git && echo yes),)
-SETTINGS-HOOKS := $(realpath $(shell cat .git | awk '{ print $2 }'))/hooks
+SETTINGS-HOOKS := $(realpath $(shell cat $(SETTINGS).git | awk '{ print $$2 }'))/hooks
+else
+SETTINGS-HOOKS := $(abspath $(shell cat $(SETTINGS).git | awk '{ print $$2 }'))
 endif
 
-GIT-HOOKS := $(GIT_REPO).git/hooks
+GIT-HOOKS := $(PROJECT_ROOT).git/hooks
 
 # Function to set hooks
 define set_hook
@@ -34,19 +37,16 @@ endef
 #@for subdir in $$(find $(DIRS) -type d -name "ex0*" | sort); do \
 	echo "\t"$(GRAY) $$subdir $(E_NC); \
 	done;
-dirs:
-	@echo $(shell pwd)
-	@echo GIT_REPO: $(GREEN) $(GIT_REPO) $(E_NC)
-	@echo SETTINGS: $(YELLOW) $(SETTINGS) $(E_NC)
-	@echo Git-hooks: $(YELLOW) $(GIT-HOOKS) $(E_NC)
-	@echo ROOT_CPP_MODULES: $(CYAN) $(ROOT_CPP_MODULES) $(E_NC)
-	@echo DIRS: $(BOLD) $(DIRS) $(E_NC)
+all:
 
 settings:
-	@echo $(YELLOW) $(SETTINGS-HOOKS) $(E_NC)
+	@echo $(shell pwd)
+	@echo PROJECT_ROOT: $(CYAN) $(PROJECT_ROOT) $(E_NC)
 	@echo Git-hooks: $(CYAN) $(GIT-HOOKS) $(E_NC)
-	@echo Git-repo: $(CYAN) $(GIT_REPO) $(E_NC)
-	@echo $(RED) $$(cat .git | awk '{ print $$2 }') $(E_NC)
+	@echo SETTINGS: $(YELLOW) $(SETTINGS) $(E_NC)
+	@echo SETTINGS-hooks: $(MAG) $(SETTINGS-HOOKS) $(E_NC)
+	@echo DIRS: $(BOLD) $(DIRS) $(E_NC)
+	
 
 .gitconfig:
 	@git config --local --list
@@ -197,4 +197,4 @@ git: show-pwd
 # 		exit 0; \
 # 	fi
 
-.PHONY: .gitconfig show-commit-msg commit-template pre-commit commit-msg post-merge show-pwd set-hooks fetch-settings update-settings .vscode gAdd gCommit gPush git-sub git
+.PHONY: all .gitconfig show-commit-msg commit-template pre-commit commit-msg post-merge show-pwd set-hooks fetch-settings update-settings .vscode gAdd gCommit gPush git-sub git dirs settings
