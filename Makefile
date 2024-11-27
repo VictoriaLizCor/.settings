@@ -129,6 +129,7 @@ update-settings: show-pwd
 
 gAdd:
 	@echo $(CYAN) && git add .
+
 gCommit:
 	@echo $(GREEN) && git commit -e ; \
 	ret=$$? ; \
