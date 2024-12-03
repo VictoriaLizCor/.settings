@@ -107,19 +107,9 @@ if [ "$USER_NAME" = "VictoriaLizCor" ] || [ "$USER_NAME" = "lilizarr" ]; then
 	regex_pattern="~ Autor: Victoria Lizarraga (@VictoriaLizCor / @$USER_NAME) ~"
 	if [[ ! $message =~ $regex_pattern ]]; then
 		echo $regex_pattern >> "$COMMIT_MSG_FILE"
+	fi
 fi
 
-if [ "$USER_NAME" = "@mcruz-sa" ]; then
-	regex_pattern="~ Autor: Manuel Guillermo Cruz(@$USER_NAME) ~"
-	if [[ ! $message =~ $regex_pattern ]]; then
-		echo $regex_pattern >> "$COMMIT_MSG_FILE"
-fi
-
-if [ "$USER_NAME" = "@msacaliu" ]; then
-	regex_pattern="~ Autor: Marian Sacaliuc(@$USER_NAME) ~"
-	if [[ ! $message =~ $regex_pattern ]]; then
-		echo $regex_pattern >> "$COMMIT_MSG_FILE"
-fi
 
 #echo $REMOTE_URL
 #echo $REPO_NAME
