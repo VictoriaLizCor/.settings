@@ -1,0 +1,14 @@
+#ignore Enviroment variables
+.env.tmp
+.env
+.settings/
+secrets/
+.vscode/
+*.log
+# services/authentication-service
+# services/backend-service
+# services/dns-service
+# services/frontend-service
+# services/game-service
+# services/nginx-service
+# services/user-management-service

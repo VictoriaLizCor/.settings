@@ -1,0 +1,10 @@
+name: ft_transcendence
+
+include:
+  - services/authentication-service/docker-compose.yml
+  - services/backend-service/docker-compose.yml
+  - services/dns-service/docker-compose.yml
+  - services/frontend-service/docker-compose.yml
+  - services/game-service/docker-compose.yml
+  - services/nginx-service/docker-compose.yml
+  - services/user-management-service/docker-compose.yml

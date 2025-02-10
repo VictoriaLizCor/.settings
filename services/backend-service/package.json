@@ -1,0 +1,21 @@
+{
+  "name": "backend-service",
+  "version": "1.0.0",
+  "description": "Backend service for handling API requests and business logic.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "dependencies": {
+    "fastify": "^3.0.0",
+    "sqlite3": "^5.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  }
+}
