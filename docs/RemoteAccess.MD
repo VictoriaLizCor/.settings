@@ -75,5 +75,8 @@ traceroute to 10.64.250.214 (10.64.250.214), 30 hops max, 60 byte packets
 
 `find . -type d -name '*service*' -exec sh -c 'touch "$0/Dockerfile" "$0/.dockerignore"' {} \;`
 
-`find services/* -type d -path '*/src' -prune -o -type d -print
-`
+`find services/* -type d -path '*/src' -prune -o -type d -print`
+
+`find services/ -type d -name '*-service'`
+
+` openssl s_client -connect DOMAIn:443`

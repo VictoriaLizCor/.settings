@@ -1,0 +1,82 @@
+secrets:
+  ssl_key:
+    file: ${NGINX_KEY}
+  ssl_cert:
+    file: ${NGINX_CERT}
+
+volumes:
+  nginx-logs:
+    driver: local
+    # name: nginx-vol
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device: ${NGINX_VOL}
+  dns-logs:
+    driver: local
+    # name: dns-vol
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device: ${NGINX_VOL}
+
+networks:
+  internal:
+    driver: bridge
+    name: internal
+  external:
+    driver: bridge
+    name: external
+
+services:
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+      args:
+        HOST-USER: ${HOST-USER}
+        USER_ID: ${USER_ID}
+        GROUP_ID: ${GROUP_ID}
+    container_name: nginx
+    image: nginx
+    secrets:
+      - ssl_key
+      - ssl_cert
+    volumes:
+      -  nginx-logs:/var/www/html
+    ports:
+      - $NGINX_PORT:$NGINX_PORT
+    environment:
+      DOMAIN: ${DOMAIN}
+      HOSTNAME: ${HOSTNAME}
+      NGINX_PORT: ${NGINX_PORT}
+      HOST-USER: ${USER}
+    # depends_on:
+    #   wordpress:
+    #     condition: service_healthy
+    networks:
+      - external
+    restart: on-failure
+    expose:
+      - ${NGINX_PORT}
+    healthcheck:
+      test:
+        ["CMD", "curl", "-fk", "https://${DOMAIN}/health.html"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  dnsmasq:
+    # build:
+      # context: requirements/nginx
+      # dockerfile: Dockerfile
+    container_name: dnsmasq
+    image: andyshinn/dnsmasq:2.78
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "5053:53/udp"
+    volumes:
+      - dns-logs:/etc/dnsmasq.conf
+      - ./DNS/conf/dnsmasq.conf:/etc/dnsmasq.conf
+    networks:
+      - external

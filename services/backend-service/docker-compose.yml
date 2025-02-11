@@ -1,0 +1,27 @@
+# volumes:
+#   backend-logs:
+#     name: nginx-vol
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ${NGINX_VOL}
+
+networks:
+  internal:
+    driver: bridge
+    name: internal
+  external:
+    driver: bridge
+    name: external
+
+services:
+  fastify:
+    container_name: fastify
+    image: node:14
+    volumes:
+      - ./fastify-nodejs/src:/usr/src/app
+    working_dir: /usr/src/app
+    command: "node server.js"
+    networks:
+      - internal

@@ -82,4 +82,38 @@ Creating a Secure Docker compose Microservice Architecture for User Management a
 		TypeScript
 	Validation:
 		Implement client-side validation for forms and user inputs
+
+
+services/authentication-service:
+	OAuth
+	JWT (JSON Web Tokens)
+	HTTPS for secure communication
+	Implement HTTPS for all endpoints
+	Use wss for WebSocket connections
+	Ensure routes are protected
+	Implement 2FA for added security
+services/backend-service:
+	Fastify (Node.js)
+	SQLite for the database
+services/dns-service:
+	HTTPS for secure communication
+	Implement server-side validation for all user inputs and forms
+services/frontend-service:
+	HTML
+	CSS
+	Tailwind
+	TypeScript
+	Implement client-side validation for forms and user inputs
+services/game-service:
+	TypeScript
+	WebSockets for real-time communication
+	Databases for result storage
+	Use wss for secure WebSocket communication
+services/user-management-service:
+	Databases like SQLite
+	HTTPS for secure communication
+	Implement server-side validation for all user inputs and forms
+services/nginx-service:
+	HTTPS
+	
 ```

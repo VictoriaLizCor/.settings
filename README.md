@@ -6,38 +6,57 @@ This project provides a secure setup for multiple microservices using Docker Com
 
 ```
 ft_transcendence
-├── authentication-service
-│   ├── Dockerfile
-│   ├── src
-│   │   └── app.js
-│   └── package.json
-├── user-management-service
-│   ├── Dockerfile
-│   ├── src
-│   │   └── app.js
-│   └── package.json
-├── dns-service
-│   ├── Dockerfile
-│   ├── src
-│   │   └── app.js
-│   └── package.json
-├── backend-service
-│   ├── Dockerfile
-│   ├── src
-│   │   └── app.js
-│   └── package.json
-├── game-service
-│   ├── Dockerfile
-│   ├── src
-│   │   └── app.ts
-│   └── package.json
-├── frontend-service
-│   ├── Dockerfile
-│   ├── src
-│   │   └── index.html
-│   └── package.json
+├── docs
+│   ├── en.subject.pdf
+│   ├── Microservices.MD
+│   ├── ports.txt
+│   ├── RemoteAccess.MD
+│   ├── tmp
+│   └── toDo
+├── secrets
+│   └── nginx
+│       └── ssl
+├── services
+│   ├── authentication-service
+│   │   ├── src
+│   │   │   └── app.js
+│   │   ├── Dockerfile
+│   │   └── package.json
+│   ├── backend-service
+│   │   ├── src
+│   │   │   └── app.js
+│   │   ├── Dockerfile
+│   │   └── package.json
+│   ├── frontend-service
+│   │   ├── src
+│   │   ├── Dockerfile
+│   │   └── package.json
+│   ├── game-service
+│   │   ├── src
+│   │   │   └── app.ts
+│   │   ├── Dockerfile
+│   │   └── package.json
+│   ├── nginx-DNS-service
+│   │   ├── DNS
+│   │   │   ├── conf
+│   │   │   └── Dockerfile
+│   │   ├── nginx
+│   │   │   ├── conf
+│   │   │   │   └── default.conf
+│   │   │   └── Dockerfile
+│   │   └── docker-compose.yml
+│   └── user-management-service
+│       ├── src
+│       │   └── app.js
+│       ├── Dockerfile
+│       └── package.json
 ├── docker-compose.yml
-└── README.md
+├── generateSecrets.sh
+├── Makefile
+├── network.mk
+├── README.md
+└── tools.mk
+
 ```
 
 ## Services Overview

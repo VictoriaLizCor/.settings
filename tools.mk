@@ -49,11 +49,24 @@ gPush:
 	fi
 git: gAdd gCommit gPush
 
+# --------------------------------------#
+watch:
+	@watch -n 1 ls -la $(VOLUMES)
 
-#`make cert arg=nginx/ssl`
+list:
+	@find services/ -type d -name '*-service'
+
 cert:
-	@$(call createDir,./secrets/$(arg))
-	@mkcert -key-file secrets/$(arg)/privkey.key -cert-file secrets/$(arg)/fullchain.crt ${USER}.pong.42.fr
+	$(call createDir,$(SSL))
+	@if [ -f $(SSL)/privkey.key ] && [ -f $(SSL)/fullchain.crt ]; then \
+		printf "$(LF)  🟢 $(P_BLUE)Certificates already exists $(P_NC)\n"; \
+	else \
+		docker run --rm --hostname pong.42.fr -v $(SSL):/certs -it alpine sh -c 'apk add --no-cache nss-tools curl && curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64" && mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert && chmod +x /usr/local/bin/mkcert && mkcert -install && mkcert -key-file /certs/privkey.key -cert-file /certs/fullchain.crt ${USER}.pong.42.fr' ; \
+		openssl x509 -in $(SSL)/fullchain.crt -text -noout ; \
+	fi
+
+# docker run --rm -v /sgoinfre/$USER/data:/certs -it debian:bullseye sh -c 'apt-get update && apt-get install -y libnss3-tools curl && curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64" && mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert && chmod +x /usr/local/bin/mkcert && mkcert -install && mkcert -key-file /certs/privkey.key -cert-file /certs/fullchain.crt ${USER}.pong.42.fr'
+#	@mkcert -key-file secrets/$(arg)/privkey.key -cert-file secrets/$(arg)/fullchain.crt ${USER}.pong.42.fr
 
 members:
 # 	@curl -H "Authorization: token `cat $(TOKEN)`" \

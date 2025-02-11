@@ -187,3 +187,24 @@ sudo lsof -i -P -n | grep LISTEN
 ```
 
 These commands will list all the ports that are currently listening for incoming connections.
+<!--######################################################### -->
+# Generating Certificates with Docker
+
+## Using `mkcert`
+
+To generate certificates using `mkcert` with Docker, run the following command:
+
+```sh
+docker run --rm -v /sgoinfre/$USER/data:/certs --privileged -it \
+    -v "$(mkcert -CAROOT)":/root/.local/share/mkcert \
+    mkcert/mkcert \
+    -key-file /certs/privkey.key -cert-file /certs/fullchain.crt example.com "*.example.com" localhost 127.0.0.1 ::1
+```
+
+## Using `certbot`
+
+To generate certificates using `certbot` with Docker, run the following command:
+
+```sh
+docker run --rm -v /sgoinfre/$USER/data:/etc/letsencrypt -v /var/lib/letsencrypt:/var/lib/letsencrypt -v /var/log/letsencrypt:/var/log/letsencrypt --privileged -it certbot/certbot certonly --standalone -d example.com -d www.example.com
+```

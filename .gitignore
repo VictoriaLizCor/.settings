@@ -1,5 +1,6 @@
 #ignore Enviroment variables
 .env.tmp
+**/.env
 .env
 .settings/
 secrets/
