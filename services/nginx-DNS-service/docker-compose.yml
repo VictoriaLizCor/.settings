@@ -34,10 +34,12 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
       args:
-        HOST-USER: ${HOST-USER}
+        DOMAIN: ${DOMAIN}
+        HOST_USER: ${HOST_USER}
         USER_ID: ${USER_ID}
         GROUP_ID: ${GROUP_ID}
     container_name: nginx
+    user: ${HOST_USER}
     image: nginx
     secrets:
       - ssl_key
@@ -48,9 +50,8 @@ services:
       - $NGINX_PORT:$NGINX_PORT
     environment:
       DOMAIN: ${DOMAIN}
-      HOSTNAME: ${HOSTNAME}
+      HOST_USER: ${HOST_USER}
       NGINX_PORT: ${NGINX_PORT}
-      HOST-USER: ${USER}
     # depends_on:
     #   wordpress:
     #     condition: service_healthy
@@ -65,6 +66,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
   dnsmasq:
     # build:
       # context: requirements/nginx

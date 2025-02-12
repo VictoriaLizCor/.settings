@@ -69,16 +69,16 @@ cert:
 #	@mkcert -key-file secrets/$(arg)/privkey.key -cert-file secrets/$(arg)/fullchain.crt ${USER}.pong.42.fr
 
 members:
-# 	@curl -H "Authorization: token `cat $(TOKEN)`" \
-# 	-H "Accept: application/vnd.github+json" \
-# 	https://api.github.com/orgs/FT-Transcendence-February-2025/teams
-# 	@curl -H "Authorization: token `cat $(TOKEN)`" \
-# 	-H "Accept: application/vnd.github+json" \
-# 	https://api.github.com/organizations/198072106/team/12155372/members
-# 	@curl -H "Authorization: token `cat $(TOKEN)`" \
-# -H "Accept: application/vnd.github+json" \
-# https://api.github.com/organizations/198072106/team/12155372/members | jq '.[].login'
-	@curl -s -H "Authorization: token `cat $(TOKEN)`"	 -H "Accept: application/vnd.github+json"	 https://api.github.com/orgs/FT-Transcendence-February-2025/members | jq
+	@curl -H "Authorization: token `cat $(TOKEN)`" \
+	-H "Accept: application/vnd.github+json"  \
+	https://api.github.com/orgs/FT-Transcendence-February-2025/teams | jq
+	@curl -H "Authorization: token `cat $(TOKEN)`" \
+	-H "Accept: application/vnd.github+json"   \
+	https://api.github.com/organizations/198072106/team/12155372/members | jq
+	@curl -H "Authorization: token `cat $(TOKEN)`" \
+-H "Accept: application/vnd.github+json"  \
+https://api.github.com/organizations/198072106/team/12155372/members | jq '.[].login'
+	@curl -s -H "Authorization: token `cat $(TOKEN)`" -H "Accept: application/vnd.github+json"	 https://api.github.com/orgs/FT-Transcendence-February-2025/members | jq
 
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
 	-H "Accept: application/vnd.github+json" \
@@ -96,6 +96,11 @@ teams:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
 	-H "Accept: application/vnd.github+json" \
 	https://api.github.com/orgs/FT-Transcendence-February-2025/teams | jq
+
+microTeam:
+	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
+	-H "Accept: application/vnd.github+json" \
+	https://api.github.com/organizations/198072106/team/12155372/members | jq
 
 gitRepoInfo:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" https://api.github.com/organizations/198072106/team/12155372/members | jq '.[] '
@@ -119,10 +124,20 @@ admin:
 	-H "Accept: application/vnd.github+json" \
 	`$(MAKE) --no-print orgs` | jq -r '.[] | select(.permissions.admin == true) | .url'
 
+orgRepos:
+	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
+	-H "Accept: application/vnd.github+json" \
+	https://api.github.com/orgs/FT-Transcendence-February-2025/repos | jq
+
 orgs:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
 	-H "Accept: application/vnd.github+json" \
 	https://api.github.com/user/orgs | jq -r '.[].repos_url'
+
+ownOrgs:
+	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
+	-H "Accept: application/vnd.github+json" \
+	https://api.github.com/user/orgs | jq
 
 info:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \

@@ -30,12 +30,12 @@ else
 endif
 	@printf "\n$(LF)🐳 $(P_BLUE)Successfully Builted Images! 🐳\n$(P_NC)"
 
-
-detach:
+# make dcon con=nginx
+dcon:
 ifeq ($(D), 1)
-	$(CMD) up --build -d
+	@bash -c 'set -o pipefail; $(CMD) up $$con --build 2>&1 | tee up.log || { echo "Error: Docker compose up failed. Check up.log for details."; exit 1; }'
 else
-	$(CMD) up --build || true
+	 @bash -c 'set -o pipefail; $(CMD) up $$con --build || { echo "Error: Docker compose up failed. Check up.log for details."; exit 1; }'
 endif
 
 
