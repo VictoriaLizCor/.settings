@@ -1,7 +1,7 @@
-# volumes:
-#   backend-logs:
-#     name: nginx-vol
-#     driver: local
+volumes:
+  fastify-vol:
+    driver: local
+    name: fastify-vol
 #     driver_opts:
 #       type: none
 #       o: bind
@@ -17,11 +17,18 @@ networks:
 
 services:
   fastify:
+    build:
+      context: ./fastify-nodejs
+      dockerfile: Dockerfile
     container_name: fastify
     image: node:14
+    hostname: fastify
     volumes:
-      - ./fastify-nodejs/src:/usr/src/app
+      - fastify-vol:/usr/src/app
     working_dir: /usr/src/app
-    command: "node server.js"
+    restart: unless-stopped
+    # command: "node server.js"
+    ports:
+      - "3000:3000"
     networks:
       - internal

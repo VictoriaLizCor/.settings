@@ -56,6 +56,11 @@ watch:
 list:
 	@find services/ -type d -name '*-service'
 
+id:
+	cat /etc/subuid | grep $(USER)
+	cat /etc/subgid | grep $(USER)
+	id -u; id -g
+
 cert:
 	$(call createDir,$(SSL))
 	@if [ -f $(SSL)/privkey.key ] && [ -f $(SSL)/fullchain.crt ]; then \

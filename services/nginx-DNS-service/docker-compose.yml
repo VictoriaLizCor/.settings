@@ -7,11 +7,12 @@ secrets:
 volumes:
   nginx-logs:
     driver: local
-    # name: nginx-vol
-    # driver_opts:
-    #   type: none
-    #   o: bind
-    #   device: ${NGINX_VOL}
+    name: nginx-vol
+    driver_opts:
+      type: bind
+      o: bind
+      device: ${NGINX_VOL}
+
   dns-logs:
     driver: local
     # name: dns-vol
@@ -39,13 +40,14 @@ services:
         USER_ID: ${USER_ID}
         GROUP_ID: ${GROUP_ID}
     container_name: nginx
-    user: ${HOST_USER}
+    # user: ${USER_ID}:${GROUP_ID}
     image: nginx
+    hostname: nginx
     secrets:
       - ssl_key
       - ssl_cert
     volumes:
-      -  nginx-logs:/var/www/html
+      - ${NGINX_VOL}:/usr/share/nginx/html
     ports:
       - $NGINX_PORT:$NGINX_PORT
     environment:
@@ -57,6 +59,7 @@ services:
     #     condition: service_healthy
     networks:
       - external
+      - internal
     restart: on-failure
     expose:
       - ${NGINX_PORT}
@@ -73,6 +76,10 @@ services:
       # dockerfile: Dockerfile
     container_name: dnsmasq
     image: andyshinn/dnsmasq:2.78
+    hostname: dnsmasq
+    environment:
+      DOMAIN: ${DOMAIN}
+      IP: ${IP}
     cap_add:
       - NET_ADMIN
     ports:

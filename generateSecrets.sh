@@ -10,7 +10,7 @@ if [ -f srcs/.env ]; then
 fi
 
 # ---------- Authentication ---------- #
-# ---------- Backend ---------- #
+
 # ---------- DNS ---------- #
 # ---------- Frontend ---------- #
 # ---------- Game ---------- #
@@ -19,9 +19,6 @@ fi
 # DB_PORT=3306
 
 # ---------- User-management ---------- #
-
-
-# ---------- NGINX ---------- #
 
 
 # ---------- .env ---------- #
@@ -47,8 +44,9 @@ NGINX_CERT=$PWD/$CERT
 NGINX_KEY=$PWD/$KEY
 NGINX_PORT=$NGINX_PORT
 NGINX_VOL=$DATA/nginx
-
 IP=$IP
+# ---------- Backend ---------- #
+FASTIFY_VOL=$DATA/fastify
 EOF
 
 
