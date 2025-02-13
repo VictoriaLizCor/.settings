@@ -119,7 +119,7 @@ setGit:
 	git config --local user.name "$$USER_NAME"; \
 	git config --local user.email "$$USER_EMAIL"
 
-admin:
+reposAdmin:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
 	-H "Accept: application/vnd.github+json" \
 	`$(MAKE) --no-print orgs` | jq -r '.[] | select(.permissions.admin == true) | .url'
@@ -148,6 +148,11 @@ ssh_url:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
 	-H "Accept: application/vnd.github+json" \
 	`$(MAKE) --no-print admin` | jq -r .ssh_url
+
+issue:
+	@curl -X POST -H "Authorization: token ghp_yourGeneratedTokenHere" \
+-d '{"title": "Bug: Authentication Failure", "body": "Description of the authentication failure issue."}' \
+https://api.github.com/repos/yourUsername/yourRepository/issues
 #--------------------COLORS----------------------------#
 # For print
 CL_BOLD  = \e[1m
