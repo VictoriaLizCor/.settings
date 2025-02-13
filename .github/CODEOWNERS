@@ -1,0 +1,16 @@
+# .github/CODEOWNERS
+# This file designates code owners for specific files or directories
+# The team lead is the code owner for all files
+* @VictoriaLizCor
+# The team members owner for all files in the services/ directory
+./services @VictoriaLizCor 
+#./services/authentication-service
+#./services/backend-service
+#./services/frontend-service
+#./services/game-service
+#./services/user-management-service
+#./services/nginx-DNS-service
+
+# The documentation team is the code owner for all files in the docs/ directory
+docs/ @VictoriaLizCor
+
