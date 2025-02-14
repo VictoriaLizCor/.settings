@@ -162,6 +162,9 @@ ssh_url:
 	-H "Accept: application/vnd.github+json" \
 	`$(MAKE) --no-print admin` | jq -r .ssh_url
 
+issue:
+	@chmod +x .settings/createIssue.sh
+	@.settings/createIssue.sh
 # issue:
 # 	curl -s -H "Authorization: token `cat $(TOKEN)`" \
 # 	-H "Accept: application/vnd.github+json" \
@@ -173,7 +176,7 @@ ssh_url:
 # 		  "milestone": 1,
 # 		  "projects": ["project1"]
 # 		}' \
-# 	https://api.github.com/repos/FT-Transcendence-February-2025/microservices/issues
+# 	https://api.github.com/repos/FT-Transcendence-February-2025/microservices/issues 
 #--------------------COLORS----------------------------#
 # For print
 CL_BOLD  = \e[1m
