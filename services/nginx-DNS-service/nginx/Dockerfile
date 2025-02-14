@@ -33,7 +33,7 @@ RUN mkdir -p /var/www/html && \
 
 # Create a health check file
 # RUN touch /var/www/html/healthcheck.html && \
-RUN echo "OK" > /var/www/html/healthcheck.html
+RUN echo "OK" > /var/www/html/health.html
 
 # Start Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]

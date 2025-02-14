@@ -39,8 +39,7 @@ ifeq ($(D), 1)
 else
 	@bash -c 'set -o pipefail; $(CMD) up $$c --build || { echo "Error: Docker compose up failed. Check up.log for details."; exit 1; }'
 endif
-	@$(MAKE) --no-print showAll
-	docker logs $$c
+	@$(MAKE) --no-print showAll logs
 
 down:
 	@printf "$(LF)\n$(P_RED)[-] Phase of stopping and deleting containers $(P_NC)\n"
@@ -94,22 +93,26 @@ secrets: #check_host
 # 	@bash generateSecrets.sh
 # 	@echo $(E_NC) > /dev/null
 
+logs:
+	@docker compose config --services | xargs -I {} docker logs {}
+	@hostname -i
+
 re: fclean all
 
 volumes: #check_os
-	
 	@printf "$(LF)\n$(P_BLUE)⚙️  Setting $(P_YELLOW)$(NAME)'s volumes$(FG_TEXT)\n"
+	@systemctl --user status docker;
 	$(call createDir,$(VOLUMES))
-	@if cat ~/.config/docker/daemon.json | grep -q $(DOCKER_DATA); then \
-		echo "\tDocker data-Root correct" ; \
-		exit 0; \
-	else \
-		echo $(DOCKER_DATA) > ~/.config/docker/daemon.json; \
-		systemctl --user stop docker ; \
-		rsync -aqxP /goinfre/$(USER)/docker/ /goinfre/$(USER)/docker/ ; \
-		systemctl --user start docker; \
-		systemctl --user status docker; \
-	fi
+# @if cat ~/.config/docker/daemon.json | grep -q $(DOCKER_DATA); then \
+# 	echo "\tDocker data-Root correct" ; \
+# 	exit 0; \
+# else \
+# 	echo $(DOCKER_DATA) > ~/.config/docker/daemon.json; \
+# 	systemctl --user stop docker ; \
+# rsync -aqxP /goinfre/$(USER)/docker/ /goinfre/$(USER)/docker/ ; \
+# 	systemctl --user start docker; \
+# 	systemctl --user status docker; \
+# fi
 #	~/.config/docker/daemon.json
 # $(call createDir,$(DB_VOL))
 # 

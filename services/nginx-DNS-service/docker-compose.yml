@@ -69,6 +69,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    extra_hosts:
+      - "${DOMAIN}:${IP}"
+    dns:
+      - 172.18.0.4
 
   dnsmasq:
     # build:
@@ -89,3 +93,4 @@ services:
       - ./DNS/conf/dnsmasq.conf:/etc/dnsmasq.conf
     networks:
       - external
+      - internal
