@@ -74,16 +74,7 @@ cert:
 #	@mkcert -key-file secrets/$(arg)/privkey.key -cert-file secrets/$(arg)/fullchain.crt ${USER}.pong.42.fr
 
 members:
-	@curl -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json"  \
-	https://api.github.com/orgs/FT-Transcendence-February-2025/teams | jq
-	@curl -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json"   \
-	https://api.github.com/organizations/198072106/team/12155372/members | jq
-	@curl -H "Authorization: token `cat $(TOKEN)`" \
--H "Accept: application/vnd.github+json"  \
-https://api.github.com/organizations/198072106/team/12155372/members | jq '.[].login'
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" -H "Accept: application/vnd.github+json"	 https://api.github.com/orgs/FT-Transcendence-February-2025/members | jq
+	@curl -s -H "Authorization: token `cat $(TOKEN)`" -H "Accept: application/vnd.github+json"	 https://api.github.com/orgs/FT-Transcendence-February-2025/members | jq -r '.[].login' | paste -sd ' ' -
 
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
 	-H "Accept: application/vnd.github+json" \
@@ -108,8 +99,15 @@ microTeam:
 	https://api.github.com/organizations/198072106/team/12155372/members | jq
 
 gitRepoInfo:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" https://api.github.com/organizations/198072106/team/12155372/members | jq '.[] '
+	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
+	-H "Accept: application/vnd.github+json" \
+	https://api.github.com/orgs/FT-Transcendence-February-2025 | jq
 
+labels:
+	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
+	-H "Accept: application/vnd.github.v3+json" \
+	https://api.github.com/repos/FT-Transcendence-February-2025/FT_Transcendence/labels | \
+	jq '.[].name'
 
 user:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" -H "Accept: application/vnd.github+json" https://api.github.com/user | jq -r '.login'
@@ -127,19 +125,29 @@ setGit:
 reposAdmin:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
 	-H "Accept: application/vnd.github+json" \
-	`$(MAKE) --no-print orgs` | jq -r '.[] | select(.permissions.admin == true) | .url'
+	`$(MAKE) --no-print reposApi` | jq -r '.[] | select(.permissions.admin == true) | .url'
+
+microRepo:
+	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
+	-H "Accept: application/vnd.github+json" \
+	`$(MAKE) --no-print reposApi` | jq -r '.[] | select(.permissions.admin == true and (.url | tostring | contains("microservice"))) | .url'
+
+microInfo:
+	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
+	-H "Accept: application/vnd.github+json" \
+	`$(MAKE) --no-print microRepo` | jq 
 
 orgRepos:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
 	-H "Accept: application/vnd.github+json" \
 	https://api.github.com/orgs/FT-Transcendence-February-2025/repos | jq
-
-orgs:
+#| jq -r '.[].name'
+reposApi:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
 	-H "Accept: application/vnd.github+json" \
 	https://api.github.com/user/orgs | jq -r '.[].repos_url'
 
-ownOrgs:
+ownOrgsInfo:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
 	-H "Accept: application/vnd.github+json" \
 	https://api.github.com/user/orgs | jq
@@ -147,17 +155,25 @@ ownOrgs:
 info:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
 	-H "Accept: application/vnd.github+json" \
-	`$(MAKE) --no-print admin` | jq
+	`$(MAKE) --no-print ownOrgs` | jq
 
 ssh_url:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
 	-H "Accept: application/vnd.github+json" \
 	`$(MAKE) --no-print admin` | jq -r .ssh_url
 
-issue:
-	@curl -X POST -H "Authorization: token ghp_yourGeneratedTokenHere" \
--d '{"title": "Bug: Authentication Failure", "body": "Description of the authentication failure issue."}' \
-https://api.github.com/repos/yourUsername/yourRepository/issues
+# issue:
+# 	curl -s -H "Authorization: token `cat $(TOKEN)`" \
+# 	-H "Accept: application/vnd.github+json" \
+# 	-d '{
+# 		  "title": "New Issue Title",
+# 		  "body": "This is the body of the new issue.",
+# 		  "assignees": ["username1", "username2"],
+# 		  "labels": ["bug", "urgent"],
+# 		  "milestone": 1,
+# 		  "projects": ["project1"]
+# 		}' \
+# 	https://api.github.com/repos/FT-Transcendence-February-2025/microservices/issues
 #--------------------COLORS----------------------------#
 # For print
 CL_BOLD  = \e[1m

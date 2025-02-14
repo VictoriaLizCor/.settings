@@ -85,7 +85,7 @@ rm-secrets: #clean_host
 		shred -u .env; \
 	fi
 
-secrets: check_host
+secrets: #check_host
 	@$(call createDir,./secrets)
 # 	@chmod +x generateSecrets.sh
 # 	@echo $(WHITE)
@@ -113,4 +113,4 @@ volumes: #check_os
 #	~/.config/docker/daemon.json
 # $(call createDir,$(DB_VOL))
 # 
-.PHONY: all buildAll set build up down clean fclean status logs restart re showAll check_os rm-secrets remove_images remove_containers remove_volumes remove_networks prune showData secrets check_host
+.PHONY: all buildAll set build up down clean fclean status logs restart re showAll check_os rm-secrets remove_images remove_containers remove_volumes remove_networks prune showData secrets
