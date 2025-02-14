@@ -50,6 +50,15 @@ gPush:
 git: gAdd gCommit gPush
 
 # --------------------------------------#
+encrypt:
+	@rm -f .tmp.enc .tmp.tar.gz
+	@tar -czf .tmp.tar.gz secrets/
+	@bash -c ' \
+	read -sp "Please enter some input: " user_input; \
+	echo; \
+	gpg --batch --passphrase "$$user_input" --symmetric --cipher-algo AES256 -o .tmp.enc .tmp.tar.gz '
+	@rm .tmp.tar.gz
+
 watch:
 	@watch -n 1 ls -la $(VOLUMES)
 
