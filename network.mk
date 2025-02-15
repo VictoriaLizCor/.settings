@@ -31,18 +31,21 @@ dnsCk:
 	-dig lilizarr.pong.42.fr
 
 testNG:
-	-docker exec -it nginx curl -I http://lilizarr.pong.42.fr
+	-docker exec -it nginx sh -c "curl -fk https://\$$DOMAIN"
 	@echo ----
-	-docker exec -it nginx curl -k https://lilizarr.pong.42.fr
+	-docker exec -it nginx sh -c "curl -fk https://\$$DOMAIN"
 	@echo;echo "----" ;
-	-docker exec -it nginx openssl s_client -connect https://lilizarr.pong.42.fr
+	-docker exec -it nginx sh -c "curl -Ik https://\$$DOMAIN"
+# -docker exec -it nginx openssl s_client -connect lilizarr.pong.42.fr:443
+# @echo;echo "----" ;
+# -docker exec -it nginx sh -c "openssl s_client -connect https://\$$DOMAIN"
 
 testWeb:
 	-curl -I http://lilizarr.pong.42.fr
 	@echo ----
-	-curl -k https://lilizarr.pong.42.fr
+	-curl -fk https://lilizarr.pong.42.fr
 	@echo ----
 	-curl -k https://lilizarr.pong.42.fr
 	@echo;echo "----" ;
-	-openssl s_client -connect lilizarr.pong.42.fr:443
+# -openssl s_client -connect lilizarr.pong.42.fr:443
 #	@docker exec -it nginx openssl s_client -connect lilizarr.pong.42.fr:443

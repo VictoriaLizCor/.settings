@@ -14,7 +14,7 @@ export TOKEN=$(shell grep '^TOKEN' secrets/.env.tmp | cut -d '=' -f2 | xargs)
 # DB_VOL		:= $(VOLUMES)/mariadb
 # MDB			:= $(SRCS)/requirements/mariadb
 # WP			:= $(SRCS)/requirements/wordpress
-SERVICES	:= $(shell docker compose config --services | xargs -I {} mkdir -p $(VOLUMES)/{})
+# SERVICES	:= $(shell docker compose config --services | xargs -I {} mkdir -p $(VOLUMES)/{})
 NAME		:= ft_transcendence
 
 -include tools.mk network.mk
@@ -55,11 +55,20 @@ stop:
 		$(CMD) stop ;\
 	fi
 
+remove_volumes:
+	@printf "$(LF)$(P_RED)  ❗  Removing $(P_YELLOW)Volumes $(FG_TEXT)"
+	@rm -rf $(VOLUMES)
+	@if [ -n "$$(docker volume ls -q)" ]; then \
+		docker volume rm $$(docker volume ls -q) > /dev/null; \
+	fi
+
+
 prune:
 	@docker image prune -af > /dev/null
 	@docker builder prune -af > /dev/null
 	@docker system prune -af > /dev/null
-	@docker volume prune -af > /dev/null
+	@docker volume prune -af
+#> /dev/null
 
 clean:
 	@printf "\n$(LF)🧹 $(P_RED) Clean $(P_GREEN) $(CURRENT)\n"
@@ -101,8 +110,9 @@ re: fclean all
 
 volumes: #check_os
 	@printf "$(LF)\n$(P_BLUE)⚙️  Setting $(P_YELLOW)$(NAME)'s volumes$(FG_TEXT)\n"
-	@systemctl --user status docker;
+#	@systemctl --user status docker;
 	$(call createDir,$(VOLUMES))
+	@docker compose config --services | xargs -I {} mkdir -p $(VOLUMES)/{}
 # @if cat ~/.config/docker/daemon.json | grep -q $(DOCKER_DATA); then \
 # 	echo "\tDocker data-Root correct" ; \
 # 	exit 0; \

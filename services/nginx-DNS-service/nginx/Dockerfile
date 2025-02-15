@@ -25,8 +25,9 @@ RUN set -e
 
 # Copy Nginx configuration file
 COPY ./conf/default.conf /etc/nginx/conf.d/default.conf
+# RUN cat /etc/nginx/nginx.conf
+COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 
-# switch non root user 
 # Create directory and set permissions
 RUN mkdir -p /var/www/html && \
 	chown -R 755 /var/www/html

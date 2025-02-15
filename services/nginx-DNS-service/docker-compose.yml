@@ -65,18 +65,18 @@ services:
       - ${NGINX_PORT}
     healthcheck:
       test:
-        ["CMD", "curl", "-fk", "https://${DOMAIN}/health.html"]
+        ["CMD", "curl", "-fk", "https://${DOMAIN}"]
       interval: 10s
       timeout: 5s
       retries: 5
     extra_hosts:
       - "${DOMAIN}:${IP}"
     dns:
-      - 172.18.0.4
-
+      - 127.0.0.11
+    depends_on:
+      - fastify
   dnsmasq:
     # build:
-      # context: requirements/nginx
       # dockerfile: Dockerfile
     container_name: dnsmasq
     image: andyshinn/dnsmasq:2.78
