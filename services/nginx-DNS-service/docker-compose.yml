@@ -25,9 +25,14 @@ networks:
   internal:
     driver: bridge
     name: internal
-  external:
+  dns-tier:
+    name: dns-tier
     driver: bridge
-    name: external
+    driver_opts:
+      com.docker.network.driver.mtu: 1350
+#   host_network:
+#     external:
+#       name: host
 
 services:
   nginx:
@@ -54,12 +59,14 @@ services:
       DOMAIN: ${DOMAIN}
       HOST_USER: ${HOST_USER}
       NGINX_PORT: ${NGINX_PORT}
+      IP: ${IP}
     # depends_on:
     #   wordpress:
     #     condition: service_healthy
     networks:
-      - external
+      - dns-tier
       - internal
+    #   - host_network
     restart: on-failure
     expose:
       - ${NGINX_PORT}
@@ -72,25 +79,55 @@ services:
     extra_hosts:
       - "${DOMAIN}:${IP}"
     dns:
-      - 127.0.0.11
+      - ${IP}
+      - 127.0.0.1
     depends_on:
       - fastify
-  dnsmasq:
-    # build:
-      # dockerfile: Dockerfile
-    container_name: dnsmasq
-    image: andyshinn/dnsmasq:2.78
-    hostname: dnsmasq
-    environment:
-      DOMAIN: ${DOMAIN}
-      IP: ${IP}
-    cap_add:
-      - NET_ADMIN
-    ports:
-      - "5053:53/udp"
-    volumes:
-      - dns-logs:/etc/dnsmasq.conf
-      - ./DNS/conf/dnsmasq.conf:/etc/dnsmasq.conf
-    networks:
-      - external
-      - internal
+    # labels:
+    #   - "traefik.http.routers.nginx.rule=Host(`${DOMAIN}`)"
+
+  # dnsmasq:
+  #   # build:
+  #     # dockerfile: Dockerfile
+  #   container_name: dnsmasq
+  #   image: andyshinn/dnsmasq:2.78
+  #   hostname: dnsmasq
+  #   environment:
+  #     DOMAIN: ${DOMAIN}
+  #     IP: ${IP}
+  #   cap_add:
+  #     - NET_ADMIN
+  #   ports:
+  #     - "5053:53/udp"
+  #   volumes:
+  #     - dns-logs:/etc/dnsmasq.conf
+  #     - ./DNS/conf/dnsmasq.conf:/etc/dnsmasq.conf
+  #   networks:
+  #     - dns-tier
+  #     - internal
+
+#   traefik:
+#     image: traefik:v2.5
+#     container_name: traefik
+#     ports:
+#       - "80:80"
+#       - "443:443"
+#     volumes:
+#       - $XDG_RUNTIME_DIR/docker.sock:/var/run/docker.sock
+#     command:
+#       - "--api.insecure=true"
+#       - "--providers.docker=true"
+#       - "--entrypoints.web.address=:80"
+#     networks:
+#       - dns-tier
+  # dns:
+  #   build:
+  #     context: ./DNS/
+  #   restart: always
+  #   ports:
+  #     - 5053:53
+  #     - 5053:53/udp
+  #   volumes:
+  #     - ./dns/named.conf:/etc/bind/named.conf
+  #     - ./dns/zone/:/etc/bind/zone/
+  #   command: named -c /etc/bind/named.conf -g -u named

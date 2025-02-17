@@ -27,8 +27,9 @@ ping:
 	fi
 
 dnsCk:
-	-nslookup lilizarr.pong.42.fr
-	-dig lilizarr.pong.42.fr
+	nmcli dev show | grep DNS
+	nslookup lilizarr.42.fr
+	dig lilizarr.42.fr
 
 testNG:
 	-docker exec -it nginx sh -c "curl -fk https://\$$DOMAIN"

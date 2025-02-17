@@ -76,7 +76,7 @@ clean:
 	@$(MAKE) --no-print stop down
 	@rm -rf *.log
 
-fclean: clean remove_containers remove_images remove_volumes prune remove_networks rm-secrets
+fclean: clean remove_containers remove_images remove_volumes prune remove_networks rm-secrets showAll
 	-@if [ -d "$(VOLUMES)" ]; then	\
 		printf "\n$(LF)🧹 $(P_RED) Clean $(P_YELLOW)Volume's Volume files$(P_NC)\n"; \
 	fi

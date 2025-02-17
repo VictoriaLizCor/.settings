@@ -25,11 +25,11 @@ fi
 DEBUG="$1"
 export $(grep -vE '^(AUTH_KEY|SECURE_AUTH_KEY|LOGGED_IN_KEY|NONCE_KEY|AUTH_SALT|SECURE_AUTH_SALT|LOGGED_IN_SALT|NONCE_SALT|TOKEN)=' ./secrets/.env.tmp)
 export DATA=$DATA/$USER/data
-export DOMAIN=$WEB_DOMAIN
+export DOMAIN=pong.$WEB_DOMAIN
 IP=$(ifconfig `ifconfig wlan1 >/dev/null 2>&1 && echo wlan1 || echo enp6s0` |  grep 'inet ' | awk '{print $2}')
 
 if [ "$DEBUG" -eq 1 ]; then
-    echo "########### ---- Debug mode is enabled ---- ###########3"
+	echo "########### ---- Debug mode is enabled ---- ###########3"
 	export DOMAIN=$USER.$WEB_DOMAIN
 fi
 cat <<EOF > .env

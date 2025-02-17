@@ -4,6 +4,9 @@ const fastify = require('fastify')({ logger: true });
 fastify.get('/', async (request, reply) => {
   return { hello: 'world' };
 });
+fastify.get('/health', async (request, reply) => {
+	return { status: 'ok' };
+});
 
 const start = async () => {
   try {
