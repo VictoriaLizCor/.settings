@@ -46,7 +46,7 @@ Since you don't have sudo or admin privileges, you won't be able to modify syste
     Add the following content:
 
     #!/bin/bash
-    echo "nameserver 10.13.1.1" > ~/resolv.conf
+    echo "nameserver $(hostname -i)" > ~/resolv.conf
     export RES_OPTIONS="ndots:0"
     export RESOLV_CONF=~/resolv.conf
 

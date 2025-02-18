@@ -8,7 +8,7 @@ CURRENT		:= $(shell basename $$PWD)
 DOCKER_DATA := '{"data-root": "/sgoinfre/$(USER)/docker/"}'
 VOLUMES		:= /sgoinfre/$(USER)/data
 
-SSL			:= ./secrets/nginx/ssl
+SSL			:= ./secrets/nginx/ssl/
 export TOKEN=$(shell grep '^TOKEN' secrets/.env.tmp | cut -d '=' -f2 | xargs)
 # WP_VOL		:= $(VOLUMES)/wordpress
 # DB_VOL		:= $(VOLUMES)/mariadb
