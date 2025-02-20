@@ -28,11 +28,15 @@ ping:
 		echo "Traceroute to $$ip failed"; \
 	fi
 
+dockerHostIP:
+	docker run --rm alpine ip route | awk '/default/ { print $3 }'
+
 dnsCk:
+	DNS42=$(shell nmcli dev show | grep DNS | awk '{print $$2}') ; \
+	nslookup $(shell hostname) $$DNS42
+	-nslookup lilizarr.42.fr
+	-dig lilizarr.42.fr
 	netstat -tuln | grep 53
-	nmcli dev show | grep DNS
-	nslookup lilizarr.42.fr
-	dig lilizarr.42.fr
 
 testNG:
 	-docker exec -it nginx sh -c "curl -fk https://\$$DOMAIN"
@@ -45,13 +49,23 @@ testNG:
 # -docker exec -it nginx sh -c "openssl s_client -connect https://\$$DOMAIN"
 
 testWeb:
-	-curl -fk --resolve lilizarr.42.fr:443:10.12.1.1 https://lilizarr.42.fr/
+	-curl -fk --resolve lilizarr.42.fr:443:$(shell hostname -i) https://lilizarr.42.fr/
 	@echo ----
-	-curl -I http://lilizarr.42.fr
+	-curl -I http://$(shell hostname)
 	@echo ----
-	-curl -fk https://lilizarr.42.fr
+	-curl -I https://$(shell hostname)
 	@echo ----
-	-curl -k https://lilizarr.42.fr
+	-curl -fk https://$(shell hostname)
+# @echo ----
+# -openssl s_client -connect lilizarr.42.fr:443 -showcerts
+	@echo ----
+	-openssl s_client -connect $(shell hostname):443 -showcerts
+	@echo ----
+	-curl -k https://$(shell hostname)
 	@echo;echo "----" ;
 # -openssl s_client -connect lilizarr.pong.42.fr:443
 #	@docker exec -it nginx openssl s_client -connect lilizarr.pong.42.fr:443
+
+browser:
+#	- firefox --private-window https://lilizarr.42.fr &
+	- firefox --private-window $(shell hostname) &

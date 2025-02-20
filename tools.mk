@@ -64,21 +64,30 @@ watch:
 
 list:
 	@find services/ -type d -name '*-service'
+	@ls -Rla $(VOLUMES)
 
 id:
 	cat /etc/subuid | grep $(USER)
 	cat /etc/subgid | grep $(USER)
 	id -u; id -g
 	cat ~/.config/docker/daemon.json
+
+alpine:
+	@docker run --name temp-alpine alpine:latest sleep 1
+	@docker commit --change "LABEL keep=true" temp-alpine alpine:latest-labeled
+	@docker rm temp-alpine
 cert:
 	$(call createDir,$(SSL))
-	@if [ -f $(SSL)/privkey.key ] && [ -f $(SSL)/fullchain.crt ]; then \
+	@HOST=$(shell hostname -s) ; \
+	if [ -f $(SSL)/$$HOST.key ] && [ -f $(SSL)/$$HOST.crt ]; then \
 		printf "$(LF)  🟢 $(P_BLUE)Certificates already exists $(P_NC)\n"; \
 	else \
-		docker run --rm --hostname pong.42.fr -v $(SSL):/certs -it alpine sh -c 'apk add --no-cache nss-tools curl && curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64" && mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert && chmod +x /usr/local/bin/mkcert && mkcert -install && mkcert -key-file /certs/privkey.key -cert-file /certs/fullchain.crt ${USER}.pong.42.fr' ; \
+		rm -rf $(SSL)/*; \
+		docker run --rm --hostname pong.42wolfsburg.de -v $(SSL):/certs -it alpine:latest-labeled sh -c 'apk add --no-cache nss-tools curl && curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64" && mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert && chmod +x /usr/local/bin/mkcert && mkcert -install && mkcert -key-file /certs/$(shell hostname -s).key -cert-file /certs/$(shell hostname -s).crt $(shell hostname)' ; \
 	fi
+# docker rm alpine
 testCert:
-	@openssl x509 -in $(SSL)/fullchain.crt -text -noout
+	@openssl x509 -in $(SSL)/*.crt -text -noout
 # docker run --rm -v /sgoinfre/$USER/data:/certs -it debian:bullseye sh -c 'apt-get update && apt-get install -y libnss3-tools curl && curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64" && mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert && chmod +x /usr/local/bin/mkcert && mkcert -install && mkcert -key-file /certs/privkey.key -cert-file /certs/fullchain.crt ${USER}.pong.42.fr'
 #	@mkcert -key-file secrets/$(arg)/privkey.key -cert-file secrets/$(arg)/fullchain.crt ${USER}.pong.42.fr
 

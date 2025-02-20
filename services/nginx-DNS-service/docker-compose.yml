@@ -34,14 +34,14 @@ networks:
   host:
     external: true
     driver: host
-  my_macvlan:
-    driver: macvlan
-    driver_opts:
-      parent: enp6s0
-    ipam:
-      config:
-        - subnet: 10.12.0.0/16
-          gateway: 10.12.1.1
+#   my_macvlan:
+#     driver: macvlan
+#     driver_opts:
+#       parent: enp6s0
+#     ipam:
+#       config:
+#         - subnet: 10.12.0.0/16
+#           gateway: 10.12.1.1
 
 services:
   nginx:
@@ -50,6 +50,7 @@ services:
       dockerfile: Dockerfile
       args:
         DOMAIN: ${DOMAIN}
+        DOMAIN_TEST: ${DOMAIN_TEST}
         HOST_USER: ${HOST_USER}
         USER_ID: ${USER_ID}
         GROUP_ID: ${GROUP_ID}
@@ -66,13 +67,14 @@ services:
       - $NGINX_PORT:$NGINX_PORT
     environment:
       DOMAIN: ${DOMAIN}
+      DOMAIN_TEST: ${DOMAIN_TEST}
       HOST_USER: ${HOST_USER}
       NGINX_PORT: ${NGINX_PORT}
       IP: ${IP}
     networks:
       - dns-tier
       - internal
-      - my_macvlan
+    #   - my_macvlan
     #   - host
     restart: on-failure
     expose:
@@ -86,12 +88,13 @@ services:
     extra_hosts:
       - "${DOMAIN}:127.0.0.1"
       - "${DOMAIN}:${IP}"
-    dns:
-      - ${IP}
-      - 127.0.0.1
+    # dns:
+    #   - ${IP}
+    #   - 127.0.0.1
     depends_on:
-      fastify:
-        condition: service_healthy
+      - fastify
+    #   fastify:
+        # condition: service_healthy
     # labels:
     #   - "traefik.http.routers.nginx.rule=Host(`${DOMAIN}`)"
 

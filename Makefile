@@ -8,7 +8,7 @@ CURRENT		:= $(shell basename $$PWD)
 DOCKER_DATA := '{"data-root": "/sgoinfre/$(USER)/docker/"}'
 VOLUMES		:= /sgoinfre/$(USER)/data
 
-SSL			:= ./secrets/nginx/ssl/
+SSL			:= ./secrets/nginx/ssl
 export TOKEN=$(shell grep '^TOKEN' secrets/.env.tmp | cut -d '=' -f2 | xargs)
 # WP_VOL		:= $(VOLUMES)/wordpress
 # DB_VOL		:= $(VOLUMES)/mariadb
@@ -33,7 +33,7 @@ endif
 	@printf "\n$(LF)🐳 $(P_BLUE)Successfully Builted Images! 🐳\n$(P_NC)"
 
 # make dcon c=nginx
-dcon: secrets
+dcon: fclean secrets cert volumes
 ifeq ($(D), 1)
 	-@bash -c 'set -o pipefail; $(CMD) up $$c --build -d 2>&1 | tee up.log || { echo "Error: Docker compose up failed. Check up.log for details."; exit 1; }'
 else
@@ -64,7 +64,7 @@ remove_volumes:
 
 
 prune:
-	@docker image prune -af > /dev/null
+	@docker image prune -af --filter "label!=keep" > /dev/null
 	@docker builder prune -af > /dev/null
 	@docker system prune -af > /dev/null
 	@docker volume prune -af
@@ -95,9 +95,10 @@ rm-secrets: #clean_host
 
 secrets: #check_host
 	@$(call createDir,./secrets)
-# 	@chmod +x generateSecrets.sh
+	@chmod +x generateSecrets.sh
 # 	@echo $(WHITE)
 # 	@export $(shell grep '^TMP' srcs/.env.tmp | xargs) && \#
+	@rm -f .env
 	@bash generateSecrets.sh $(D)
 # 	@bash generateSecrets.sh
 # 	@echo $(E_NC) > /dev/null

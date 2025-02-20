@@ -1,21 +1,26 @@
 {
-  "name": "frontend-service",
+  "name": "rest-api-project-frontend",
   "version": "1.0.0",
-  "description": "Frontend service for the secure docker compose project",
-  "main": "src/index.html",
+  "description": "Frontend for the REST API project using TypeScript and Tailwind CSS",
+  "main": "src/index.ts",
   "scripts": {
-    "start": "http-server src -p 8080",
-    "build": "echo 'Build process not defined'"
+    "build": "webpack --mode production",
+    "start": "webpack serve --mode development",
+    "watch": "webpack --watch"
   },
   "dependencies": {
-    "http-server": "^0.12.3",
-    "tailwindcss": "^2.2.19",
-    "typescript": "^4.5.4"
+    "axios": "^0.21.1",
+    "tailwindcss": "^2.2.19"
   },
   "devDependencies": {
-    "typescript": "^4.5.4"
+    "typescript": "^4.4.4",
+    "webpack": "^5.64.4",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^3.11.2",
+    "ts-loader": "^9.2.6",
+    "postcss": "^8.4.5",
+    "autoprefixer": "^10.4.2"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC"
 }
