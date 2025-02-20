@@ -1,0 +1,63 @@
+version: '3.8'
+
+networks:
+  frontend:
+  backend:
+
+services:
+  traefik:
+    image: traefik:v2.5
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./traefik/traefik.yml:/etc/traefik/traefik.yml"
+      - "./traefik/dynamic:/etc/traefik/dynamic"
+    networks:
+      - frontend
+      - backend
+
+  user-service:
+    build: ./user-service
+    labels:
+      - "traefik.http.routers.user-service.rule=Host(`user-service.local`)"
+      - "traefik.http.services.user-service.loadbalancer.server.port=8000"
+    networks:
+      - backend
+
+  tournament-service:
+    build: ./tournament-service
+    labels:
+      - "traefik.http.routers.tournament-service.rule=Host(`tournament-service.local`)"
+      - "traefik.http.services.tournament-service.loadbalancer.server.port=8000"
+    networks:
+      - backend
+
+  matchmaking-service:
+    build: ./matchmaking-service
+    labels:
+      - "traefik.http.routers.matchmaking-service.rule=Host(`matchmaking-service.local`)"
+      - "traefik.http.services.matchmaking-service.loadbalancer.server.port=8000"
+    networks:
+      - backend
+
+  game-session-service:
+    build: ./game-session-service
+    labels:
+      - "traefik.http.routers.game-session-service.rule=Host(`game-session-service.local`)"
+      - "traefik.http.services.game-session-service.loadbalancer.server.port=8000"
+    networks:
+      - backend
+
+  frontend-service:
+    build: ./frontend-service
+    labels:
+      - "traefik.http.routers.frontend-service.rule=Host(`frontend.local`)"
+      - "traefik.http.services.frontend-service.loadbalancer.server.port=3000"
+    networks:
+      - frontend

@@ -38,24 +38,25 @@
    - **Result Processing:**
      - Records game outcomes and updates player stats.
 
-5. **Notification Service:**
-   - **Event Alerts:**
-     - Sends notifications for tournament updates, match invitations, and game results.
-   - **Channels:**
-     - Supports multiple channels like email, SMS, or in-app messages.
-
-6. **Leaderboard Service:**
-   - **Ranking Data:**
-     - Aggregates player scores, ranks, and statistics.
-   - **Public & Private Boards:**
-     - Supports global leaderboards and tournament-specific rankings.
-
-7. **Gateway API Service:**
+5. **Gateway API Service:**
    - **Unified Entry Point:**
      - Acts as a single interface for client applications.
      - Routes requests to appropriate microservices.
    - **Security Enforcement:**
      - Implements rate limiting, authentication checks, and input validation.
+
+6. **Notification Service:**
+   - **Event Alerts:**
+     - Sends notifications for tournament updates, match invitations, and game results.
+   - **Channels:**
+     - Supports multiple channels like email, SMS, or in-app messages.
+
+7. **Leaderboard Service:**
+   - **Ranking Data:**
+     - Aggregates player scores, ranks, and statistics.
+   - **Public & Private Boards:**
+     - Supports global leaderboards and tournament-specific rankings.
+
 
 ---
 

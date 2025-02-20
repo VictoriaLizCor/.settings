@@ -33,7 +33,7 @@ endif
 	@printf "\n$(LF)🐳 $(P_BLUE)Successfully Builted Images! 🐳\n$(P_NC)"
 
 # make dcon c=nginx
-dcon: fclean secrets cert volumes
+dcon: fclean cert secrets volumes
 ifeq ($(D), 1)
 	-@bash -c 'set -o pipefail; $(CMD) up $$c --build -d 2>&1 | tee up.log || { echo "Error: Docker compose up failed. Check up.log for details."; exit 1; }'
 else
