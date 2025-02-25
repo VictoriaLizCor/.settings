@@ -1,5 +1,3 @@
-version: '3.8'
-
 networks:
   frontend:
   backend:
@@ -10,14 +8,15 @@ services:
     command:
       - "--api.insecure=true"
       - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
     ports:
-      - "80:80"
+      - "443:443"
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./traefik/traefik.yml:/etc/traefik/traefik.yml"
-      - "./traefik/dynamic:/etc/traefik/dynamic"
+      - "./traefik/config.yml:/etc/traefik/config.yml"
+      - "./certs:/etc/traefik/certs"  # Mount the directory containing your certificates
     networks:
       - frontend
       - backend
@@ -26,6 +25,7 @@ services:
     build: ./user-service
     labels:
       - "traefik.http.routers.user-service.rule=Host(`user-service.local`)"
+      - "traefik.http.routers.user-service.entrypoints=websecure"
       - "traefik.http.services.user-service.loadbalancer.server.port=8000"
     networks:
       - backend
@@ -34,6 +34,7 @@ services:
     build: ./tournament-service
     labels:
       - "traefik.http.routers.tournament-service.rule=Host(`tournament-service.local`)"
+      - "traefik.http.routers.tournament-service.entrypoints=websecure"
       - "traefik.http.services.tournament-service.loadbalancer.server.port=8000"
     networks:
       - backend
@@ -42,6 +43,7 @@ services:
     build: ./matchmaking-service
     labels:
       - "traefik.http.routers.matchmaking-service.rule=Host(`matchmaking-service.local`)"
+      - "traefik.http.routers.matchmaking-service.entrypoints=websecure"
       - "traefik.http.services.matchmaking-service.loadbalancer.server.port=8000"
     networks:
       - backend
@@ -50,6 +52,7 @@ services:
     build: ./game-session-service
     labels:
       - "traefik.http.routers.game-session-service.rule=Host(`game-session-service.local`)"
+      - "traefik.http.routers.game-session-service.entrypoints=websecure"
       - "traefik.http.services.game-session-service.loadbalancer.server.port=8000"
     networks:
       - backend
@@ -58,6 +61,7 @@ services:
     build: ./frontend-service
     labels:
       - "traefik.http.routers.frontend-service.rule=Host(`frontend.local`)"
+      - "traefik.http.routers.frontend-service.entrypoints=websecure"
       - "traefik.http.services.frontend-service.loadbalancer.server.port=3000"
     networks:
       - frontend

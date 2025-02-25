@@ -4,27 +4,27 @@ http:
       rule: "Host(`user-service.local`)"
       service: user-service
       entryPoints:
-        - web
+        - websecure
     tournament-service:
       rule: "Host(`tournament-service.local`)"
       service: tournament-service
       entryPoints:
-        - web
+        - websecure
     matchmaking-service:
       rule: "Host(`matchmaking-service.local`)"
       service: matchmaking-service
       entryPoints:
-        - web
+        - websecure
     game-session-service:
       rule: "Host(`game-session-service.local`)"
       service: game-session-service
       entryPoints:
-        - web
+        - websecure
     frontend-service:
       rule: "Host(`frontend.local`)"
       service: frontend-service
       entryPoints:
-        - web
+        - websecure
 
   services:
     user-service:
@@ -49,12 +49,20 @@ http:
           - url: "http://frontend-service:3000"
 
 entryPoints:
-  web:
-    address: ":80"
+  websecure:
+    address: ":443"
+    http:
+      tls:
+        certResolver: myresolver
 
 providers:
   docker:
     exposedByDefault: false
+
+tls:
+  certificates:
+    - certFile: "/etc/traefik/certs/cert.pem"
+      keyFile: "/etc/traefik/certs/key.pem"
 
 log:
   level: DEBUG
