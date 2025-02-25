@@ -1,0 +1,166 @@
+"hello":"world"}[lilizarr@c3r2s3:~/42_Cursus/ft_transcendence]$ make testNG
+docker exec -it nginx curl -I http://lilizarr.pong.42.fr
+HTTP/1.1 301 Moved Permanently
+Server: nginx/1.18.0
+Date: Fri, 14 Feb 2025 19:24:42 GMT
+Content-Type: text/html
+Content-Length: 169
+Connection: keep-alive
+Location: https://lilizarr.pong.42.fr/
+
+docker exec -it nginx curl -k https://lilizarr.pong.42.fr
+{"hello":"world"}docker exec -it nginx openssl s_client -connect lilizarr.pong.42.fr:443
+CONNECTED(00000003)
+depth=0 O = mkcert development certificate, OU = root@pong.42.fr
+verify error:num=20:unable to get local issuer certificate
+verify return:1
+depth=0 O = mkcert development certificate, OU = root@pong.42.fr
+verify error:num=21:unable to verify the first certificate
+verify return:1
+depth=0 O = mkcert development certificate, OU = root@pong.42.fr
+verify return:1
+---
+Certificate chain
+ 0 s:O = mkcert development certificate, OU = root@pong.42.fr
+   i:O = mkcert development CA, OU = root@pong.42.fr, CN = mkcert root@pong.42.fr
+---
+Server certificate
+-----BEGIN CERTIFICATE-----
+MIIEETCCAnmgAwIBAgIRANVHQU5PBhWePmiGmEkUHL0wDQYJKoZIhvcNAQELBQAw
+WzEeMBwGA1UEChMVbWtjZXJ0IGRldmVsb3BtZW50IENBMRgwFgYDVQQLDA9yb290
+QHBvbmcuNDIuZnIxHzAdBgNVBAMMFm1rY2VydCByb290QHBvbmcuNDIuZnIwHhcN
+MjUwMjExMTU1NjE1WhcNMjcwNTExMTU1NjE1WjBDMScwJQYDVQQKEx5ta2NlcnQg
+ZGV2ZWxvcG1lbnQgY2VydGlmaWNhdGUxGDAWBgNVBAsMD3Jvb3RAcG9uZy40Mi5m
+cjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAM9+FIMARuDZJ0N2wPtu
+RRm3D+ZSCzlxfd83kueBcZa3QZiGikBhAFUvbJi5ljBJikse5n/Qz2aKMsNUG2/q
+MM40uVqxaSZ9Uxpjt0g4rHrp3q6wZP9CGWLp6EExTne3Za6S0/aRcV2nFpMSKse8
+CgsZ+Y+VH5iOhwP0mpgwQoWH8YUNLlOeYTY81972JSJ374Se4o3poylWx14An4wU
+NjY6ex8Y4cGHZA7/7zTAo/0+e6FV8h5w4gANimlUnXjX5h7tsLWQiQ1DGv9Qg0yC
+tZQiNGcHkrHlyNBppO2mklwYUxWa0OL2zL6PgZwUiFhyuYhQjREWtkTOvlOQkosY
+kq8CAwEAAaNoMGYwDgYDVR0PAQH/BAQDAgWgMBMGA1UdJQQMMAoGCCsGAQUFBwMB
+MB8GA1UdIwQYMBaAFH5JpZN8gFjlgv/YwaFmTpLgnhgbMB4GA1UdEQQXMBWCE2xp
+bGl6YXJyLnBvbmcuNDIuZnIwDQYJKoZIhvcNAQELBQADggGBAC1LYX7XRmB8GcPO
+SuE6f4ZfQrF5aKLXkTO62DojQMJmz7cB4Q0nR86mMahebPZTRcEQbOj0UXoDalge
+lYyN3Br6LLqSYQIZb6Xvdm14FgmGrG/zRb0qvcEoqfD1fH6kGNb9q8Xv6/Dc/9GF
+hxq3eEpt0EfCU/hatWHchmildk3kcdII4/okA26D5OHQUyog4J3QpBIOYCp0I8Dt
+WLogSAhlyciy3hFQoB1kuETxYaIqcgBq3OlAK3ohr6DoYIc2QsogDuu+AilMePUT
+iOvdowEmuZt2wFKHNRcCyI41P8OSjEwUngnTFIhP0un4jc+1jU9H6bpummfyXgqZ
+NbToZ3DUg5tlD1syeEtRzPHAUbipqrkBLxTJC/Fz9k1f8INVq9yz97gQp6FaXLHh
+E67dn/BximdXKwYUAyKGWPjBoZPU3Aoh/+NHOjsd3gimAjVDxnmiGRuwZ7vcmTNH
+kyK+hf1zgsfd4+UX2H2rYqXsijYgrELABFd7xoamqLKGzMHDOQ==
+-----END CERTIFICATE-----
+subject=O = mkcert development certificate, OU = root@pong.42.fr
+
+issuer=O = mkcert development CA, OU = root@pong.42.fr, CN = mkcert root@pong.42.fr
+
+---
+No client certificate CA names sent
+Peer signing digest: SHA256
+Peer signature type: RSA-PSS
+Server Temp Key: X25519, 253 bits
+---
+SSL handshake has read 1605 bytes and written 391 bytes
+Verification error: unable to verify the first certificate
+---
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Server public key is 2048 bit
+Secure Renegotiation IS NOT supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+Early data was not sent
+Verify return code: 21 (unable to verify the first certificate)
+---
+---
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: 61D063CEB39A4077EA6AB3C0FE0AACAC048D401EB4C514AB5461679D46671B74
+    Session-ID-ctx: 
+    Resumption PSK: 3AE1E3EB3D4154265CD4EE13EBD5D77D3E2D250BCB1CB6A21521A8DC94E7B0FB0CC89FB8CE3F05E396678E4CB6942B66
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 600 (seconds)
+    TLS session ticket:
+    0000 - 17 1d 6f 99 86 6d f4 a2-cc 7d 9b 65 f2 df b6 9c   ..o..m...}.e....
+    0010 - fa ed 62 0b 83 93 c3 cd-a0 74 ab d2 ca 2f 1c 2b   ..b......t.../.+
+    0020 - 57 47 c8 20 47 ca 06 5b-23 f1 66 9b c5 6e 4d 51   WG. G..[#.f..nMQ
+    0030 - 3e 8a 4d 44 5f e2 2a dc-8c 42 5f 6b af 2f 3a e4   >.MD_.*..B_k./:.
+    0040 - fc d5 f6 72 36 48 7b d5-f9 47 5c 29 8f 47 27 bd   ...r6H{..G\).G'.
+    0050 - 62 a2 e6 ce fa 85 1c c5-b1 b7 dc 22 b4 eb c0 40   b.........."...@
+    0060 - eb 8d f2 d9 bf 2d e2 ef-70 01 b0 26 4b 17 9a 1a   .....-..p..&K...
+    0070 - d7 2a e9 c6 f0 9e e2 0a-1a 52 9b 24 37 84 c8 70   .*.......R.$7..p
+    0080 - 8b b1 22 7c 59 07 87 1c-25 36 1b 32 98 b9 52 16   .."|Y...%6.2..R.
+    0090 - 8a 17 1d da 8f ef fe e4-eb f9 bd 70 a8 71 bc 6b   ...........p.q.k
+    00a0 - 75 09 dc c5 38 0d b8 3f-cb ff f0 9c 1b 8c c1 50   u...8..?.......P
+    00b0 - 20 39 7f c2 54 e5 74 38-ae 69 98 db d1 73 4d 05    9..T.t8.i...sM.
+    00c0 - 5c ac e8 46 a9 2b 53 e7-74 2a 5c 69 45 0e b1 f0   \..F.+S.t*\iE...
+    00d0 - e8 1d 25 4b 49 da 77 f9-21 be d1 73 a9 fc 0a 0a   ..%KI.w.!..s....
+    00e0 - 91 42 ed 6b 57 38 ef f4-14 08 de ee 06 07 95 49   .B.kW8.........I
+
+    Start Time: 1739561082
+    Timeout   : 7200 (sec)
+    Verify return code: 21 (unable to verify the first certificate)
+    Extended master secret: no
+    Max Early Data: 0
+---
+read R BLOCK
+---
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: 59289F448EBC0874F205B0BCC2F3C4C886EC43780DA86A74C61A361DA99F79CA
+    Session-ID-ctx: 
+    Resumption PSK: 1DE0FF185C2C774E9CA7A2653155B7FAAAA4D6F0CF67BEA117EC7F1FB79030947FC3A4FB86E5A10506C713698DC9DD0D
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 600 (seconds)
+    TLS session ticket:
+    0000 - 17 1d 6f 99 86 6d f4 a2-cc 7d 9b 65 f2 df b6 9c   ..o..m...}.e....
+    0010 - 9a 1e 9d 11 5e 1e 53 28-df f2 f8 7d df 13 32 d4   ....^.S(...}..2.
+    0020 - 34 48 ab 28 1e 5d 67 f5-d0 30 46 8d 31 81 dc a0   4H.(.]g..0F.1...
+    0030 - 94 18 d9 61 b9 87 4a 73-18 2e bc 89 23 59 a1 5b   ...a..Js....#Y.[
+    0040 - aa 49 bc 32 d2 63 59 03-79 64 be 6d 56 fa ad 4e   .I.2.cY.yd.mV..N
+    0050 - 90 f3 be cc 60 4e 39 bc-f2 01 58 12 4f 5c 8b 07   ....`N9...X.O\..
+    0060 - b9 81 7a 77 d6 6e d8 bd-67 a7 f4 a4 82 e1 f1 5c   ..zw.n..g......\
+    0070 - 21 23 84 dd 39 09 74 09-f6 08 e6 5c 45 1f bc bb   !#..9.t....\E...
+    0080 - 9c 70 87 a0 7f a0 ec d1-37 48 d0 cf dc de 0c e4   .p......7H......
+    0090 - 5f 01 31 ab 55 6e 30 40-ed 6d a0 f6 f8 38 71 1c   _.1.Un0@.m...8q.
+    00a0 - 07 87 17 06 1d c6 e7 f5-67 dd ea 01 a4 d9 71 76   ........g.....qv
+    00b0 - 22 e2 49 4e 29 73 18 86-aa a1 01 91 09 50 bb 12   ".IN)s.......P..
+    00c0 - dc f0 66 c8 e2 45 af f1-40 76 ff 8e 3d 44 f9 56   ..f..E..@v..=D.V
+    00d0 - 80 73 7d fe 3a 0b 30 2f-18 ea 1a 7d c0 f9 61 6b   .s}.:.0/...}..ak
+    00e0 - 49 80 88 8d 66 7e b3 cb-a4 23 ce e0 f7 a2 57 8b   I...f~...#....W.
+
+    Start Time: 1739561082
+    Timeout   : 7200 (sec)
+    Verify return code: 21 (unable to verify the first certificate)
+    Extended master secret: no
+    Max Early Data: 0
+---
+read R BLOCK
+q
+HTTP/1.1 400 Bad Request
+Server: nginx/1.18.0
+Date: Fri, 14 Feb 2025 19:24:44 GMT
+Content-Type: text/html
+Content-Length: 157
+Connection: close
+X-Frame-Options: SAMEORIGIN
+X-XSS-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+Referrer-Policy: no-referrer-when-downgrade
+Content-Security-Policy: default-src 'self' http: https: data: blob: 'unsafe-inline'
+
+<html>
+<head><title>400 Bad Request</title></head>
+<body>
+<center><h1>400 Bad Request</h1></center>
+<hr><center>nginx/1.18.0</center>
+</body>
+</html>
+read:errno=0

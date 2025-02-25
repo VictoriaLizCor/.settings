@@ -11,9 +11,9 @@ networks:
   internal:
     driver: bridge
     name: internal
-  external:
+  backend:
     driver: bridge
-    name: external
+    name: backend
 
 services:
   fastify:
@@ -21,13 +21,15 @@ services:
       context: ./fastify-nodejs
       dockerfile: Dockerfile
     container_name: fastify
-    image: node:14
     hostname: fastify
     volumes:
       - fastify-vol:/usr/src/app
-    working_dir: /usr/src/app
+    # working_dir: /usr/src/app
     restart: unless-stopped
     networks:
       - internal
-    # dns:
-    #   - 127.0.0.1
+      - backend
+    labels:
+      - "traefik.http.routers.fastify.rule=Host(`fastify.local`)"
+      - "traefik.http.routers.fastify.entrypoints=websecure"
+      - "traefik.http.services.fastify.loadbalancer.server.port=3000"

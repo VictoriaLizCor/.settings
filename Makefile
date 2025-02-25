@@ -5,10 +5,10 @@ CMD		:= docker compose
 PROJECT_ROOT:= $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../)
 GIT_REPO	:=$(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../..)
 CURRENT		:= $(shell basename $$PWD)
-DOCKER_DATA := '{"data-root": "/sgoinfre/$(USER)/docker/"}'
+# DOCKER_DATA := '{"data-root": "/sgoinfre/$(USER)/docker/"}'
 VOLUMES		:= /sgoinfre/$(USER)/data
 
-SSL			:= ./secrets/nginx/ssl
+SSL			:= ./secrets/ssl
 export TOKEN=$(shell grep '^TOKEN' secrets/.env.tmp | cut -d '=' -f2 | xargs)
 # WP_VOL		:= $(VOLUMES)/wordpress
 # DB_VOL		:= $(VOLUMES)/mariadb
@@ -33,7 +33,7 @@ endif
 	@printf "\n$(LF)🐳 $(P_BLUE)Successfully Builted Images! 🐳\n$(P_NC)"
 
 # make dcon c=nginx
-dcon: fclean cert secrets volumes
+dcon: cert secrets volumes
 ifeq ($(D), 1)
 	-@bash -c 'set -o pipefail; $(CMD) up $$c --build -d 2>&1 | tee up.log || { echo "Error: Docker compose up failed. Check up.log for details."; exit 1; }'
 else
@@ -93,7 +93,7 @@ rm-secrets: #clean_host
 		shred -u .env; \
 	fi
 
-secrets: #check_host
+secrets: #check_host 
 	@$(call createDir,./secrets)
 	@chmod +x generateSecrets.sh
 # 	@echo $(WHITE)
@@ -104,8 +104,8 @@ secrets: #check_host
 # 	@echo $(E_NC) > /dev/null
 
 logs:
-	@docker compose config --services | xargs -I {} docker logs {}
-	@hostname -i
+	docker compose logs
+# @docker compose config --services | xargs -I {} docker logs {}
 
 re: fclean all
 

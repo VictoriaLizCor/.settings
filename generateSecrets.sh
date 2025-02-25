@@ -26,7 +26,8 @@ DEBUG="$1"
 export $(grep -vE '^(AUTH_KEY|SECURE_AUTH_KEY|LOGGED_IN_KEY|NONCE_KEY|AUTH_SALT|SECURE_AUTH_SALT|LOGGED_IN_SALT|NONCE_SALT|TOKEN)=' ./secrets/.env.tmp)
 export DATA=$DATA/$USER/data
 export DOMAIN=$(hostname)
-IP=$(ifconfig `ifconfig wlan1 >/dev/null 2>&1 && echo wlan1 || echo enp6s0` |  grep 'inet ' | awk '{print $2}')
+IP=$(hostname -i)
+# IP=$(ifconfig `ifconfig wlan1 >/dev/null 2>&1 && echo wlan1 || echo enp6s0` |  grep 'inet ' | awk '{print $2}')
 
 if [ "$DEBUG" -eq 1 ]; then
 	echo "########### ---- Debug mode is enabled ---- ###########3"
@@ -39,14 +40,23 @@ CONTAINER_NAME=$CONTAINER_NAME
 HOST_USER=$USER
 DOMAIN=$DOMAIN
 DOMAIN_TEST=$DOMAIN_TEST
-# ---------- NGINX-DNS ---------- #
-NGINX_CERT=$PWD/$SSL/$(hostname -s).crt
-NGINX_KEY=$PWD/$SSL/$(hostname -s).key
-NGINX_PORT=$NGINX_PORT
-NGINX_VOL=$DATA/nginx
+ADMIN_EMAIL=$ADMIN_EMAIL
 IP=$IP
-# ---------- Backend ---------- #
+# ---------- VOLUMES ---------- #
+NGINX_VOL=$DATA/nginx
 FASTIFY_VOL=$DATA/fastify
+TRAEFIK_VOL=$DATA/traefik
+# ---------- CERTIFICATES ---------- #
+SSL_PATH=$PWD/$SSL
+SSL_CRT=$PWD/$SSL/$(hostname -s).crt
+SSL_KEY=$PWD/$SSL/$(hostname -s).key
+SSL_PEM=$PWD/$SSL/$(hostname -s).pem
+SSL_PORT=$SSL_PORT
+
+
+# ---------- Backend ---------- #
+
+
 EOF
 
 

@@ -1,8 +1,10 @@
 secrets:
   ssl_key:
-    file: ${NGINX_KEY}
-  ssl_cert:
-    file: ${NGINX_CERT}
+    file: ${SSL_KEY}
+  ssl_crt:
+    file: ${SSL_CRT}
+  ssl_pem:
+    file: ${SSL_PEM}
 
 volumes:
   nginx-logs:
@@ -64,12 +66,12 @@ services:
     volumes:
       - ${NGINX_VOL}:/usr/share/nginx/html
     ports:
-      - $NGINX_PORT:$NGINX_PORT
+      - $SSL_PORT:$SSL_PORT
     environment:
       DOMAIN: ${DOMAIN}
       DOMAIN_TEST: ${DOMAIN_TEST}
       HOST_USER: ${HOST_USER}
-      NGINX_PORT: ${NGINX_PORT}
+      SSL_PORT: ${SSL_PORT}
       IP: ${IP}
     networks:
       - dns-tier
@@ -78,7 +80,7 @@ services:
     #   - host
     restart: on-failure
     expose:
-      - ${NGINX_PORT}
+      - ${SSL_PORT}
     healthcheck:
       test:
         ["CMD", "curl", "-fk", "https://${DOMAIN}"]

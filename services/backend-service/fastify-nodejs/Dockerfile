@@ -1,19 +1,17 @@
-FROM node:14
+FROM node:20-alpine
+
+RUN apk update && apk add sqlite
 
 # Create app directory
+# WORKDIR /app
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
 COPY package*.json ./
-COPY src/server.js /usr/src/app/
-# Install app dependencies
-RUN npm install
+RUN npm install --include=dev
 
-# Bundle app source
 COPY . .
 
-# Expose port
 EXPOSE 3000
 
-# Command to run the app
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
+# CMD ["npm", "start"]
