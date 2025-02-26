@@ -74,7 +74,6 @@ services:
       SSL_PORT: ${SSL_PORT}
       IP: ${IP}
     networks:
-      - dns-tier
       - internal
     #   - my_macvlan
     #   - host

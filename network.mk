@@ -69,3 +69,7 @@ testWeb:
 browser:
 #	- firefox --private-window https://lilizarr.42.fr &
 	- firefox --private-window $(shell hostname) &
+
+curlt:
+	curl -v -H "Host: c3r2s3.42wolfsburg.de" https://localhost:443
+	curl -v -H "Host: c3r2s3.42wolfsburg.de" http://localhost:80

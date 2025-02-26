@@ -25,6 +25,12 @@ http:
       service: frontend-service
       entryPoints:
         - websecure
+    fastify:
+      rule: "Host(`${DOMAIN}`)"
+      service: fastify-service
+      entryPoints:
+        - websecure
+        - web
 
   services:
     user-service:
@@ -47,3 +53,7 @@ http:
       loadBalancer:
         servers:
           - url: "http://frontend-service:3000"
+    fastify-service:
+      loadBalancer:
+        servers:
+          - url: "http://fastify:3000"

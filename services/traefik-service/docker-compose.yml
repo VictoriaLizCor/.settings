@@ -14,19 +14,30 @@ networks:
     driver: bridge
     name: backend
 
+volumes:
+  traefik-logs:
+    driver: local
+    name: traefik-vol
+    driver_opts:
+      type: bind
+      o: bind
+      device: ${TRAEFIK_VOL}
+
+
 services:
   traefik:
-    image: traefik:v3.3.3
+    build:
+      context: ./
+      dockerfile: Dockerfile
     container_name: traefik
     hostname: traefik
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.email=${ADMIN_EMAIL}"
-      - "--certificatesresolvers.myresolver.acme.storage=acme.json"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+    environment:
+      DOMAIN: ${DOMAIN}
+      DOMAIN_TEST: ${DOMAIN_TEST}
+      HOST_USER: ${HOST_USER}
+      SSL_PORT: ${SSL_PORT}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      IP: ${IP}
     ports:
       - "80:80"
       - "443:443"
@@ -36,15 +47,15 @@ services:
       - ssl_crt
       - ssl_pem
     volumes:
-      - "${XDG_RUNTIME_DIR}/docker.sock:/var/run/docker.sock"
-      - "./traefik.yml:/etc/traefik/traefik.yml"
-      - "./dynamic/config.yml:/etc/traefik/config.yml"
-      - "./certs:/acme.json"
-      - "${SSL_PATH}:/etc/traefik/certs"  # Mount the directory containing your certificates
+      - "${XDG_RUNTIME_DIR}/docker.sock:/var/run/docker.sock:ro"
+      - "./config/traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "./dynamic/config.yml:/etc/traefik/etc/traefik/config.yml:ro"
+      - "${NGINX_VOL}:/etc/traefik/"
+      # - "${SSL_PATH}:/etc/traefik/certs"  # Mount the directory containing your certificates
     networks:
       - frontend
       - backend
-    restart: on-failure
+    restart: unless-stopped
 
   # user-service:
   #   build: ./user-service

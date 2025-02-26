@@ -26,10 +26,13 @@ services:
       - fastify-vol:/usr/src/app
     # working_dir: /usr/src/app
     restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN}
     networks:
-      - internal
+    #   - internal
       - backend
     labels:
-      - "traefik.http.routers.fastify.rule=Host(`fastify.local`)"
-      - "traefik.http.routers.fastify.entrypoints=websecure"
+      - traefik.enable=true
+      - "traefik.http.routers.fastify.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.fastify.entrypoints=websecure,web"
       - "traefik.http.services.fastify.loadbalancer.server.port=3000"

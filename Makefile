@@ -103,8 +103,9 @@ secrets: #check_host
 # 	@bash generateSecrets.sh
 # 	@echo $(E_NC) > /dev/null
 
+# make logs c=fastify
 logs:
-	docker compose logs
+	docker compose logs $$c
 # @docker compose config --services | xargs -I {} docker logs {}
 
 re: fclean all

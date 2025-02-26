@@ -59,3 +59,33 @@ Since you don't have sudo or admin privileges, you won't be able to modify syste
     source ~/.set_dns.sh
 
 These steps should help you set up dnsmasq with the static IP address of your enp6s0 interface without needing sudo or admin privileges. If you encounter any issues, feel free to ask!
+
+
+Since you do not have `sudo` privileges and cannot modify the system-wide `apt` configuration, you can manually download and build the `socat` source code from its official repository. Here are the steps to do this:
+
+1. **Download the `socat` Source Code:**
+   Download the `socat` source code from its official repository.
+
+   ```sh
+   wget http://www.dest-unreach.org/socat/download/socat-1.7.4.3.tar.gz
+   tar -xzf socat-1.7.4.3.tar.gz
+   cd socat-1.7.4.3
+   ```
+
+2. **Build and Install Locally:**
+   Configure, build, and install `socat` locally in your home directory.
+
+   ```sh
+   ./configure --prefix=$HOME
+   make
+   make install
+   ```
+
+3. **Verify Installation:**
+   Verify that `socat` is installed correctly by checking its version.
+
+   ```sh
+   $HOME/bin/socat -V
+   ```
+
+By following these steps, you should be able to download, build, and install `socat` locally without requiring `sudo` privileges.
