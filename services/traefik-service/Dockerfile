@@ -19,4 +19,4 @@ EXPOSE 443
 EXPOSE 8080
 
 WORKDIR /etc/traefik/
-CMD ["traefik"]
+# CMD ["traefik"]

@@ -12,18 +12,29 @@ entryPoints:
       maxConcurrentStreams: 250
     http:
       tls:
-        certResolver: myresolver
+        # certResolver: myresolver
+        certificates:
+         - certFile: "/run/secrets/ssl_crt"
+           keyFile: "/run/secrets/ssl_key"
 
 providers:
   docker:
     exposedByDefault: false
     endpoint: "unix:///var/run/docker.sock"
-  file:
-    filename: /etc/traefik/etc/traefik/config.yml
-    watch: true
+#   file:
+#     filename: /etc/traefik/etc/traefik/config.yml
+    # watch: true
 
 # self certificates
 tls:
+  stores:
+    default:
+      defaultGeneratedCert:
+        resolver: myresolver
+        domain:
+          main: 42wolfsburg.de
+          sans:
+            - "*.42wolfsburg.de"
   certificates:
     - certFile: "/run/secrets/ssl_crt"
       keyFile: "/run/secrets/ssl_key"
@@ -31,16 +42,20 @@ tls:
 certificatesResolvers:
   myresolver:
     acme:
+    #   email: admin.42wolfsburg.de
       email: "/run/secrets/ssl_email"
       storage: "/etc/traefik/acme.json"
       httpChallenge:
-        entryPoint: "websecure"
+        entryPoint: "web"
 log:
   level: DEBUG
 accessLog: {}
+
 global:
   checkNewVersion: false
   sendAnonymousUsage: false
+
 api:
   dashboard: true
   insecure: true
+  debug: true

@@ -35,7 +35,10 @@ dnsCk:
 	DNS42=$(shell nmcli dev show | grep DNS | awk '{print $$2}') ; \
 	nslookup $(shell hostname) $$DNS42
 	-nslookup lilizarr.42.fr
-	-dig lilizarr.42.fr
+	-nslookup -type=NS $(shell hostname)
+	-dig $(shell hostname)
+	-dig NS $(shell hostname)
+	-openssl s_client -connect 42wolfsburg.de:443 -showcerts
 	netstat -tuln | grep 53
 
 testNG:

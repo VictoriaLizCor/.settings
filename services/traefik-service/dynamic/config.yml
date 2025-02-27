@@ -1,5 +1,13 @@
+
 http:
   routers:
+    fastify:
+      rule: "Host(`fastify-service`)"
+      service: fastify-service
+      entryPoints:
+        - websecure
+        - web
+
     # user-service:
     #   rule: "Host(`user-service.local`)"
     #   service: user-service
@@ -25,14 +33,12 @@ http:
     #   service: frontend-service
     #   entryPoints:
     #     - websecure
-    fastify:
-      rule: "Host(`${DOMAIN}`) || Host(`${IP}`)"
-      service: fastify-service
-      entryPoints:
-        - websecure
-        - web
 
   services:
+    fastify-service:
+    loadBalancer:
+      servers:
+        - url: "http://fastify:3000"
     # user-service:
     #   loadBalancer:
     #     servers:
@@ -53,7 +59,3 @@ http:
     #   loadBalancer:
     #     servers:
     #       - url: "http://frontend-service:3000"
-    fastify-service:
-      loadBalancer:
-        servers:
-          - url: "http://fastify:3000"

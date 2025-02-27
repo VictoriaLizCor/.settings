@@ -85,7 +85,16 @@ cert:
 		printf "$(LF)  🟢 $(P_BLUE)Certificates already exists $(P_NC)\n"; \
 	else \
 		rm -rf $(SSL)/*; \
-		docker run --rm --hostname pong.42wolfsburg.de -v $(SSL):/certs -it alpine:latest sh -c 'apk add --no-cache nss-tools curl ca-certificates && curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64" && mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert && chmod +x /usr/local/bin/mkcert && mkcert -install && mkcert -key-file /certs/$(shell hostname -s).key -cert-file /certs/$(shell hostname -s).crt $(shell hostname) && cp /root/.local/share/mkcert/rootCA.pem /certs/$(shell hostname -s).pem' ; \
+		docker run --rm --hostname 42wolfsburg.de -v $(SSL):/certs -it alpine:latest sh -c 'apk add --no-cache nss-tools curl ca-certificates && curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64" && mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert && chmod +x /usr/local/bin/mkcert && mkcert -install && mkcert -key-file /certs/$(shell hostname -s).key -cert-file /certs/$(shell hostname -s).crt $(shell hostname) && cp /root/.local/share/mkcert/rootCA.pem /certs/$(shell hostname -s).pem' ; \
+	fi
+cerbot:
+	$(call createDir,$(SSL))
+	@HOST=$(shell hostname -s) ; \
+	if [ -f $(SSL)/$$HOST.key ] && [ -f $(SSL)/$$HOST.crt ]; then \
+		printf "$(LF)  🟢 $(P_BLUE)Certificates already exists $(P_NC)\n"; \
+	else \
+		rm -rf $(SSL)/*; \
+		docker run --rm --privileged --hostname 42wolfsburg.de -v $(SSL):/etc/letsencrypt -v $(SSL):/var/lib/letsencrypt -v $(SSL):/var/log/letsencrypt -p 80:80 -p 443:443 certbot/certbot sh -c "certbot certonly --standalone -d $(shell hostname) && cp /etc/letsencrypt/live/$(shell hostname)/privkey.pem /etc/letsencrypt/live/$(shell hostname)/$(shell hostname -s).key && cp /etc/letsencrypt/live/$(shell hostname)/fullchain.pem /etc/letsencrypt/live/$(shell hostname)/$(shell hostname -s).crt"; \
 	fi
 # docker rm alpine
 testCert:
