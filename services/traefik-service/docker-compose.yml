@@ -5,6 +5,8 @@ secrets:
     file: ${SSL_CRT}
   ssl_pem:
     file: ${SSL_PEM}
+  ssl_email:
+    file: ${SSL_EMAIL}
 
 networks:
   frontend:

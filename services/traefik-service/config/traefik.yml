@@ -1,6 +1,11 @@
 entryPoints:
   web:
     address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
   websecure:
     address: ":443"
     http2:
@@ -14,7 +19,7 @@ providers:
     exposedByDefault: false
     endpoint: "unix:///var/run/docker.sock"
   file:
-    filename: /etc/traefik/dynamic/config.yml
+    filename: /etc/traefik/etc/traefik/config.yml
     watch: true
 
 # self certificates
@@ -26,7 +31,7 @@ tls:
 certificatesResolvers:
   myresolver:
     acme:
-      email: "${ADMIN_EMAIL}"
+      email: "/run/secrets/ssl_email"
       storage: "/etc/traefik/acme.json"
       httpChallenge:
         entryPoint: "websecure"
