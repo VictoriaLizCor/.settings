@@ -31,6 +31,7 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
+    # image: "traefik:v3.3"
     container_name: traefik
     hostname: traefik
     environment:
@@ -51,8 +52,8 @@ services:
       - ssl_email
     volumes:
       - "${XDG_RUNTIME_DIR}/docker.sock:/var/run/docker.sock:ro"
-      - "./config/traefik.yml:/etc/traefik/traefik.yml:ro"
-      - "./dynamic/config.yml:/etc/traefik/etc/traefik/config.yml:ro"
+      # - "./config/traefik.yml:/etc/traefik/traefik.yml:ro"
+      # - "./dynamic/config.yml:/etc/traefik/etc/traefik/config.yml:ro"
       - "traefik-logs:/etc/traefik/"
       - "traefik-logs:/etc/traefik/certs"  # Mount the directory containing your certificates
     networks:
@@ -61,6 +62,15 @@ services:
     restart: unless-stopped
     command:
       - "traefik"
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.web.address=:80"
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesResolvers.myresolver.acme.tlsChallenge=true"
+      - "--certificatesResolvers.myresolver.acme.email=${ADMIN_EMAIL}"
+      - "--certificatesResolvers.myresolver.acme.storage=/etc/traefik/acme.json"
     #   - "--entryPoints.web.address=:80"
     #   - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
     #   - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
