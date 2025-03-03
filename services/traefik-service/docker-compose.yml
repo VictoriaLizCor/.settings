@@ -5,6 +5,8 @@ secrets:
     file: ${SSL_CRT}
   ssl_pem:
     file: ${SSL_PEM}
+  ssl_email:
+    file: ${SSL_EMAIL}
 
 networks:
   frontend:
@@ -29,6 +31,7 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
+    # image: "traefik:v3.3"
     container_name: traefik
     hostname: traefik
     environment:
@@ -47,6 +50,7 @@ services:
       - ssl_key
       - ssl_crt
       - ssl_pem
+      - ssl_email
     volumes:
       - "${XDG_RUNTIME_DIR}/docker.sock:/var/run/docker.sock:ro"
       - "./config/traefik.yml:/etc/traefik/traefik.yml:ro"

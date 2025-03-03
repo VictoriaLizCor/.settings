@@ -19,6 +19,14 @@
 
 # self certificates
 tls:
+  stores:
+    default:
+      defaultGeneratedCert:
+        resolver: myresolver
+        domain:
+          main: 42wolfsburg.de
+          sans:
+            - "*.42wolfsburg.de"
   certificates:
     - certFile: "/run/secrets/ssl_crt"
       keyFile: "/run/secrets/ssl_key"

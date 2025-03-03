@@ -32,6 +32,7 @@ IP=$(hostname -i)
 if [ "$DEBUG" -eq 1 ]; then
 	echo "########### ---- Debug mode is enabled ---- ###########3"
 fi
+echo $ADMIN_EMAIL > ./secrets/ssl/adminEmail.txt
 cat <<EOF > .env
 USER=$USER
 USER_ID=$(id -u)
@@ -51,11 +52,11 @@ SSL_PATH=$PWD/$SSL
 SSL_CRT=$PWD/$SSL/$(hostname -s).crt
 SSL_KEY=$PWD/$SSL/$(hostname -s).key
 SSL_PEM=$PWD/$SSL/$(hostname -s).pem
+SSL_EMAIL=$PWD/$SSL/adminEmail.txt
 SSL_PORT=$SSL_PORT
 
 
 # ---------- Backend ---------- #
-
 
 EOF
 

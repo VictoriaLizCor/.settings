@@ -18,14 +18,16 @@ show:
 
 showAll:
 	@printf "$(LF)$(D_PURPLE)* List all running and sleeping containers$(P_NC)\n"
-	@docker container ls -a
+	@$(CMD) ps
 	@printf "$(LF)$(D_PURPLE)* List all images$(P_NC)\n"
-	@docker image ls
+	@$(CMD) images
 	@printf "$(LF)$(D_PURPLE)* List all volumes$(P_NC)\n"
 	@docker volume ls
 	@printf "$(LF)$(D_PURPLE)* List all networks$(P_NC)\n"
 	@docker network ls
 
+watch:
+	@watch -n 1 ls -la $(VOLUMES)
 watchC:
 	@$(CMD) ps -a; $(CMD) images
 	@docker volume ls; docker network ls 
@@ -62,9 +64,6 @@ encrypt:
 	gpg --batch --passphrase "$$user_input" --symmetric --cipher-algo AES256 -o .tmp.enc .tmp.tar.gz '
 	@rm .tmp.tar.gz
 
-watch:
-	@watch -n 1 ls -la $(VOLUMES)
-
 list:
 	@find services/ -type d -name '*-service'
 	@ls -Rla $(VOLUMES)
@@ -86,7 +85,16 @@ cert:
 		printf "$(LF)  🟢 $(P_BLUE)Certificates already exists $(P_NC)\n"; \
 	else \
 		rm -rf $(SSL)/*; \
-		docker run --rm --hostname pong.42wolfsburg.de -v $(SSL):/certs -it alpine:latest sh -c 'apk add --no-cache nss-tools curl ca-certificates && curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64" && mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert && chmod +x /usr/local/bin/mkcert && mkcert -install && mkcert -key-file /certs/$(shell hostname -s).key -cert-file /certs/$(shell hostname -s).crt $(shell hostname) && cp /root/.local/share/mkcert/rootCA.pem /certs/$(shell hostname -s).pem' ; \
+		docker run --rm --hostname 42wolfsburg.de -v $(SSL):/certs -it alpine:latest sh -c 'apk add --no-cache nss-tools curl ca-certificates && curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64" && mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert && chmod +x /usr/local/bin/mkcert && mkcert -install && mkcert -key-file /certs/$(shell hostname -s).key -cert-file /certs/$(shell hostname -s).crt $(shell hostname) && cp /root/.local/share/mkcert/rootCA.pem /certs/$(shell hostname -s).pem' ; \
+	fi
+cerbot:
+	$(call createDir,$(SSL))
+	@HOST=$(shell hostname -s) ; \
+	if [ -f $(SSL)/$$HOST.key ] && [ -f $(SSL)/$$HOST.crt ]; then \
+		printf "$(LF)  🟢 $(P_BLUE)Certificates already exists $(P_NC)\n"; \
+	else \
+		rm -rf $(SSL)/*; \
+		docker run --rm --privileged --hostname 42wolfsburg.de -v $(SSL):/etc/letsencrypt -v $(SSL):/var/lib/letsencrypt -v $(SSL):/var/log/letsencrypt -p 80:80 -p 443:443 certbot/certbot sh -c "certbot certonly --standalone -d $(shell hostname) && cp /etc/letsencrypt/live/$(shell hostname)/privkey.pem /etc/letsencrypt/live/$(shell hostname)/$(shell hostname -s).key && cp /etc/letsencrypt/live/$(shell hostname)/fullchain.pem /etc/letsencrypt/live/$(shell hostname)/$(shell hostname -s).crt"; \
 	fi
 # docker rm alpine
 testCert:
@@ -94,110 +102,6 @@ testCert:
 # docker run --rm -v /sgoinfre/$USER/data:/certs -it debian:bullseye sh -c 'apt-get update && apt-get install -y libnss3-tools curl && curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64" && mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert && chmod +x /usr/local/bin/mkcert && mkcert -install && mkcert -key-file /certs/privkey.key -cert-file /certs/fullchain.crt ${USER}.pong.42.fr'
 #	@mkcert -key-file secrets/$(arg)/privkey.key -cert-file secrets/$(arg)/fullchain.crt ${USER}.pong.42.fr
 
-members:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" -H "Accept: application/vnd.github+json"	 https://api.github.com/orgs/FT-Transcendence-February-2025/members | jq -r '.[].login' | paste -sd ' ' -
-
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json" \
-	https://api.github.com/orgs/FT-Transcendence-February-2025/teams | jq '.[].members_url'
-	@logins=$$(curl -s -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json" \
-	https://api.github.com/organizations/198072106/team/12155372/members | jq -r '.[].login' | paste -sd ' ' -); \
-	ids=$$(curl -s -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json" \
-	https://api.github.com/organizations/198072106/team/12155372/members | jq -r '.[].id' | paste -sd ' ' -); \
-	echo "login: $$logins"; \
-	echo "id: $$ids"
-
-teams:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json" \
-	https://api.github.com/orgs/FT-Transcendence-February-2025/teams | jq
-
-microTeam:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json" \
-	https://api.github.com/organizations/198072106/team/12155372/members | jq
-
-gitRepoInfo:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json" \
-	https://api.github.com/orgs/FT-Transcendence-February-2025 | jq
-
-labels:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github.v3+json" \
-	https://api.github.com/repos/FT-Transcendence-February-2025/FT_Transcendence/labels | \
-	jq '.[].name'
-
-user:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" -H "Accept: application/vnd.github+json" https://api.github.com/user | jq -r '.login'
-
-email:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" -H "Accept: application/vnd.github+json" \
-	https://api.github.com/user/emails | jq -r '.[] | select(.primary == true) | .email'
-
-setGit:
-	@USER_NAME=$$( $(MAKE) --no-print user | tr -d '"' ); \
-	USER_EMAIL=$$( $(MAKE) --no-print email ); \
-	git config --local user.name "$$USER_NAME"; \
-	git config --local user.email "$$USER_EMAIL"
-
-reposAdmin:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json" \
-	`$(MAKE) --no-print reposApi` | jq -r '.[] | select(.permissions.admin == true) | .url'
-
-microRepo:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json" \
-	`$(MAKE) --no-print reposApi` | jq -r '.[] | select(.permissions.admin == true and (.url | tostring | contains("microservice"))) | .url'
-
-microInfo:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json" \
-	`$(MAKE) --no-print microRepo` | jq 
-
-orgRepos:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json" \
-	https://api.github.com/orgs/FT-Transcendence-February-2025/repos | jq
-#| jq -r '.[].name'
-reposApi:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json" \
-	https://api.github.com/user/orgs | jq -r '.[].repos_url'
-
-ownOrgsInfo:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json" \
-	https://api.github.com/user/orgs | jq
-
-info:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json" \
-	`$(MAKE) --no-print ownOrgs` | jq
-
-ssh_url:
-	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
-	-H "Accept: application/vnd.github+json" \
-	`$(MAKE) --no-print admin` | jq -r .ssh_url
-
-issue:
-	@chmod +x .settings/createIssue.sh
-	@.settings/createIssue.sh
-# issue:
-# 	curl -s -H "Authorization: token `cat $(TOKEN)`" \
-# 	-H "Accept: application/vnd.github+json" \
-# 	-d '{
-# 		  "title": "New Issue Title",
-# 		  "body": "This is the body of the new issue.",
-# 		  "assignees": ["username1", "username2"],
-# 		  "labels": ["bug", "urgent"],
-# 		  "milestone": 1,
-# 		  "projects": ["project1"]
-# 		}' \
-# 	https://api.github.com/repos/FT-Transcendence-February-2025/microservices/issues 
 #--------------------COLORS----------------------------#
 # For print
 CL_BOLD  = \e[1m

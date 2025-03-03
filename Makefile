@@ -17,7 +17,7 @@ export TOKEN=$(shell grep '^TOKEN' secrets/.env.tmp | cut -d '=' -f2 | xargs)
 # SERVICES	:= $(shell docker compose config --services | xargs -I {} mkdir -p $(VOLUMES)/{})
 NAME		:= ft_transcendence
 
--include tools.mk network.mk
+-include tools.mk network.mk gitApi.mk
 
 #-------------------- RULES -------------------------#
 
@@ -39,7 +39,10 @@ ifeq ($(D), 1)
 else
 	@bash -c 'set -o pipefail; $(CMD) up $$c --build || { echo "Error: Docker compose up failed. Check up.log for details."; exit 1; }'
 endif
-	@$(MAKE) --no-print showAll logs
+	@$(MAKE) --no-print showAll logs 
+
+watchDocker:
+	@$(CMD) watch
 
 down:
 	@printf "$(LF)\n$(P_RED)[-] Phase of stopping and deleting containers $(P_NC)\n"
@@ -76,12 +79,13 @@ clean:
 	@$(MAKE) --no-print stop down
 	@rm -rf *.log
 
-fclean: clean remove_containers remove_images remove_volumes prune remove_networks rm-secrets showAll
+fclean: clean remove_containers remove_images remove_volumes prune remove_networks rm-secrets
 	-@if [ -d "$(VOLUMES)" ]; then	\
 		printf "\n$(LF)🧹 $(P_RED) Clean $(P_YELLOW)Volume's Volume files$(P_NC)\n"; \
 	fi
 	@printf "$(LF)"
 	@echo $(WHITE) "$$TRASH" $(E_NC)
+	@docker container ls -a; docker image ls; docker volume ls
 
 
 rm-secrets: #clean_host
