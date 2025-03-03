@@ -1,21 +1,21 @@
-entryPoints:
-  web:
-    address: ":80"
-  websecure:
-    address: ":443"
-    http2:
-      maxConcurrentStreams: 250
-    http:
-      tls:
-        certResolver: myresolver
+# entryPoints:
+#   web:
+#     address: ":80"
+#   websecure:
+#     address: ":443"
+#     http2:
+#       maxConcurrentStreams: 250
+#     http:
+#       tls:
+#         certResolver: myresolver
 
-providers:
-  docker:
-    exposedByDefault: false
-    endpoint: "unix:///var/run/docker.sock"
-  file:
-    filename: /etc/traefik/dynamic/config.yml
-    watch: true
+# providers:
+#   docker:
+#     exposedByDefault: false
+#     endpoint: "unix:///var/run/docker.sock"
+#   file:
+#     filename: /etc/traefik/dynamic/config.yml
+#     watch: true
 
 # self certificates
 tls:
@@ -23,19 +23,19 @@ tls:
     - certFile: "/run/secrets/ssl_crt"
       keyFile: "/run/secrets/ssl_key"
 # acme let's encrypt certificates
-certificatesResolvers:
-  myresolver:
-    acme:
-      email: "${ADMIN_EMAIL}"
-      storage: "/etc/traefik/acme.json"
-      httpChallenge:
-        entryPoint: "websecure"
-log:
-  level: DEBUG
-accessLog: {}
-global:
-  checkNewVersion: false
-  sendAnonymousUsage: false
-api:
-  dashboard: true
-  insecure: true
+# certificatesResolvers:
+#   myresolver:
+#     acme:
+#       email: "${ADMIN_EMAIL}"
+#       storage: "/etc/traefik/acme.json"
+#       httpChallenge:
+#         entryPoint: "websecure"
+# log:
+#   level: DEBUG
+# accessLog: {}
+# global:
+#   checkNewVersion: false
+#   sendAnonymousUsage: false
+# api:
+#   dashboard: true
+#   insecure: true

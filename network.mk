@@ -49,7 +49,7 @@ testNG:
 # -docker exec -it nginx sh -c "openssl s_client -connect https://\$$DOMAIN"
 
 testWeb:
-	-curl -fk --resolve lilizarr.42.fr:443:$(shell hostname -i) https://lilizarr.42.fr/
+# -curl -fk --resolve lilizarr.42.fr:443:$(shell hostname -i) https://lilizarr.42.fr/
 	@echo ----
 	-curl -I http://$(shell hostname)
 	@echo ----
@@ -73,3 +73,17 @@ browser:
 curlt:
 	curl -v -H "Host: c3r2s3.42wolfsburg.de" https://localhost:443
 	curl -v -H "Host: c3r2s3.42wolfsburg.de" http://localhost:80
+
+42test:
+	-curl -fk --resolve 42wolfsburg.de
+	@echo ----
+	-openssl s_client -connect 42wolfsburg.de:443 -showcerts
+	@echo ----
+	-DNS42=$(shell nmcli dev show | grep DNS | awk '{print $$2}') ; \
+	nslookup 42wolfsburg.de $$DNS42
+	@echo ----
+	dig NS 42wolfsburg.de
+	@echo ----
+	nslookup -type=NS 42wolfsburg.de
+	@echo ----
+	nmcli dev show | grep DNS

@@ -26,6 +26,9 @@ showAll:
 	@printf "$(LF)$(D_PURPLE)* List all networks$(P_NC)\n"
 	@docker network ls
 
+watchC:
+	@$(CMD) ps -a; $(CMD) images
+	@docker volume ls; docker network ls 
 # ------------ GIT UTILS ------------
 gAdd:
 	@echo $(CYAN) && git add .
