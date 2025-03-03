@@ -7,11 +7,11 @@ entryPoints:
       maxConcurrentStreams: 250
     http:
       tls:
-        certResolver: myresolver
+        # certResolver: myresolver
         domains:
-          - main: '{{ env "${DOMAIN}" }}'
+          - main: "{{ env 'DOMAIN' }}"
             sans:
-              - '{{ env "${IP}" }}'
+              - "{{ env 'IP' }}"
 
 providers:
   docker:
@@ -43,13 +43,13 @@ tls:
 #           sans:
 #             - "*.42wolfsburg.de"
 # acme let's encrypt certificates
-certificatesResolvers:
-  myresolver:
-    acme:
-      email: "${SSL_EMAIL}"
-      storage: "/etc/traefik/acme.json"
-      httpChallenge:
-        entryPoint: "websecure"
+# certificatesResolvers:
+#   myresolver:
+#     acme:
+#       email: "/run/secrets/ssl_email"
+#       storage: "/etc/traefik/acme.json"
+#       httpChallenge:
+#         entryPoint: "websecure"
 log:
   level: DEBUG
 accessLog: {}

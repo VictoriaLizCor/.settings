@@ -19,4 +19,6 @@ EXPOSE 443
 EXPOSE 8080
 
 WORKDIR /etc/traefik/
+ENV DOMAIN=${DOMAIN}
+ENV IP=${IP}
 # CMD ["traefik"]

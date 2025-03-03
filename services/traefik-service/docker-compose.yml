@@ -39,7 +39,6 @@ services:
       DOMAIN_TEST: ${DOMAIN_TEST}
       HOST_USER: ${HOST_USER}
       SSL_PORT: ${SSL_PORT}
-      SSL_EMAIL: ${SSL_EMAIL}
       IP: ${IP}
       TZ: UTC
     ports:
@@ -70,7 +69,7 @@ services:
       - "--entryPoints.websecure.address=:443"
       - "--entryPoints.websecure.http.tls=true"
       - "--entryPoints.websecure.http.tls.certResolver=myresolver"
-      - "--entryPoints.websecure.http.tls.domains[0].main=${DOMAIN}`"
+      - "--entryPoints.websecure.http.tls.domains[0].main=${DOMAIN}"
       - "--entryPoints.websecure.http.tls.domains[0].sans=${IP}"
     #   - "--certificatesResolvers.myresolver.acme.tlsChallenge=true"
     #   - "--certificatesResolvers.myresolver.acme.email=${SSL_EMAIL}"
