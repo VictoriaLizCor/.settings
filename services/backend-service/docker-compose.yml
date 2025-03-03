@@ -29,7 +29,6 @@ services:
     environment:
       DOMAIN: ${DOMAIN}
       IP: ${IP}
-      IP: ${IP}
     networks:
     #   - internal
       - backend
