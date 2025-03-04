@@ -1,17 +1,23 @@
 entryPoints:
   web:
     address: ":80"
+    forwardedHeaders:
+      trustedIPs:
+        - "0.0.0.0/0"
   websecure:
     address: ":443"
     http2:
       maxConcurrentStreams: 250
     http:
       tls:
-        # certResolver: myresolver
+        certResolver: myresolver
         domains:
           - main: "{{ env 'DOMAIN' }}"
             sans:
               - "{{ env 'IP' }}"
+    forwardedHeaders:
+      trustedIPs:
+        - "0.0.0.0/0"
 
 providers:
   docker:
@@ -28,11 +34,17 @@ tls:
       keyFile: "/run/secrets/ssl_key"
       stores:
         - default
-#   stores:
-#     default:
-#       defaultCertificate:
-#         certFile: "/run/secrets/ssl_crt"
-#         keyFile: "/run/secrets/ssl_key"
+  stores:
+    default:
+      defaultCertificate:
+        certFile: "/run/secrets/ssl_crt"
+        keyFile: "/run/secrets/ssl_key"
+  options:
+    default:
+      minVersion: VersionTLS13
+      cipherSuites:
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_RSA_WITH_AES_256_GCM_SHA384
 
 #   stores:
 #     default:
@@ -44,12 +56,13 @@ tls:
 #             - "*.42wolfsburg.de"
 # acme let's encrypt certificates
 # certificatesResolvers:
-#   myresolver:
-#     acme:
-#       email: "/run/secrets/ssl_email"
-#       storage: "/etc/traefik/acme.json"
-#       httpChallenge:
-#         entryPoint: "websecure"
+  myresolver:
+    acme:
+      email: "/run/secrets/ssl_email"
+      storage: "/etc/traefik/acme.json"
+    #   httpChallenge:
+    #     entryPoint: "websecure"
+      tlsChallenge: {}
 log:
   level: DEBUG
 accessLog: {}
@@ -57,5 +70,5 @@ global:
   checkNewVersion: false
   sendAnonymousUsage: false
 api:
-  dashboard: true
+  dashboard: false
   insecure: true

@@ -4,17 +4,22 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const fastify = Fastify({ logger: true });
+// Enable trustProxy to trust the X-Forwarded-For headers
+const fastify = Fastify({ 
+  logger: true,
+  trustProxy: true 
+});
+
 
 fastify.get('/', async (request, reply) => {
-  return { hello: 'world' };
-});
-
-fastify.get('/health', async (request, reply) => {
-  return { status: 'ok' };
-});
-
-const start = async () => {
+	return { hello: 'world', ip: request.ip };
+  });
+  
+  fastify.get('/health', async (request, reply) => {
+	return { status: 'ok' };
+  });
+  
+  const start = async () => {
 	try {
 	  await fastify.listen({ port: 3000, host: '0.0.0.0' });
 	  fastify.log.info(`Server listening on ${fastify.server.address().port}`);

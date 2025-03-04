@@ -37,3 +37,5 @@ services:
       - "traefik.http.routers.fastify.rule=Host(`${DOMAIN}`) || Host(`${IP}`)"
       - "traefik.http.routers.fastify.entrypoints=websecure,web"
       - "traefik.http.services.fastify.loadbalancer.server.port=3000"
+    #   - "traefik.http.services.fastify.loadbalancer.server.scheme=https"
+    #   - "traefik.http.middlewares.test-auth.forwardauth.tls.insecureSkipVerify=true"
