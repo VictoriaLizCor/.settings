@@ -34,7 +34,7 @@ verify return:1
 Certificate chain
  0 s:O = mkcert development certificate, OU = root@pong.42.fr
    i:O = mkcert development CA, OU = root@pong.42.fr, CN = mkcert root@pong.42.fr
-   a:PKEY: rsaEncryption, 2048 (bit); sigalg: RSA-SHA256
+   a:PKEY: rsaion, 2048 (bit); sigalg: RSA-SHA256
    v:NotBefore: Feb 19 15:05:30 2025 GMT; NotAfter: May 19 15:05:30 2027 GMT
 -----BEGIN CERTIFICATE-----
 MIIEEjCCAnqgAwIBAgIQM5wCNTuf8cOGRAsgVFZpmzANBgkqhkiG9w0BAQsFADBb

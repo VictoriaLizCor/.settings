@@ -39,12 +39,18 @@ services:
       DOMAIN_TEST: ${DOMAIN_TEST}
       HOST_USER: ${HOST_USER}
       SSL_PORT: ${SSL_PORT}
+      DNS_SERVER: ${DNS_SERVER}
+      DNS_SEARCH: ${DNS_SEARCH}
       IP: ${IP}
-      TZ: UTC
+      TZ: Europe/Berlin
     ports:
       - "80:80"
       - "443:443"
       - "8080:8080"
+    dns:
+      - ${DNS_SERVER}
+    dns_search:
+      - ${DNS_SEARCH}
     secrets:
       - ssl_key
       - ssl_crt
@@ -55,7 +61,7 @@ services:
       - "./config/traefik.yml:/etc/traefik/traefik.yml:ro"
       # - "./dynamic/config.yml:/etc/traefik/etc/traefik/config.yml:ro"
       - "traefik-logs:/etc/traefik/"
-      - "${SSL_PATH}:/etc/traefik/certs"  # Mount the directory containing your certificates
+      # - "${SSL_PATH}:/etc/traefik/certs"  # Mount the directory containing your certificates
     networks:
       - frontend
       - backend
@@ -65,7 +71,7 @@ services:
       - "--providers.file.filename=/etc/traefik/traefik.yml"
       - "--providers.docker=true"
       - "--providers.docker.exposedByDefault=false"
-    #   - "--log.level=DEBUG"
+      - "--log.level=DEBUG"
     #   - "--entryPoints.web.address=:80"
     #   - "--entryPoints.websecure.address=:443"
     #   - "--entryPoints.websecure.http.tls=true"
@@ -73,89 +79,11 @@ services:
     #   - "--entryPoints.websecure.http.tls.domains[0].main=${DOMAIN}"
     #   - "--entryPoints.websecure.http.tls.domains[0].sans=${IP}"
     # labels:
+    #   - traefik.enable=true
+    #   - "traefik.http.routers.traefik.rule=Host(`${DOMAIN}`) || Host(`${IP}`)"
     #   - "--certificatesResolvers.myresolver.acme.tlsChallenge=true"
     #   - "--certificatesResolvers.myresolver.acme.email=${SSL_EMAIL}"
     #   - "--certificatesResolvers.myresolver.acme.storage=/etc/traefik/acme.json"
     #   - "--certificatesResolvers.myresolver.acme.tlsChallenge=true"
     #   - "--entryPoints.websecure.http.tls.certificates[0].certFile=/run/secrets/ssl_crt"
     #   - "--entryPoints.websecure.http.tls.certificates[0].keyFile=/run/secrets/ssl_key"
-# dashboard:
-#     image: "traefik:v3.3"
-#     # This is so we can validate externally (in browser or with curl 
-#     #   & openssl) that the site is up and that the cert is self-signed
-#     # This is not required for example to run
-#     ports:
-#       - "8443:443"
-#     command:
-#       # listen on 443
-#       - --entryPoints.websecure.address=:443
-#       # serve dashboard
-#       - --api
-#       # load dynamic config from a file
-#       - --providers.file.filename=/dashboard.toml
-#       # note, docker provider is not enabled for this one, since the purpose 
-#       #    of this container to to be traefik but just a random web site with 
-#       #    a self signed cert
-#     volumes:
-#         - "./config/dashboard.toml:/dashboard.toml:ro"
-#      # These labels are read by the _main_ traefik instance, not this one
-#     labels:
-#      # expose this via main traefik instance
-#      - "traefik.enable=true"
-#      # all requests should match
-#      - "traefik.http.routers.dashboard.rule=PathPrefix(`/`)"
-#      # web is the only entry point main traefik instance defines
-#      - "traefik.http.routers.dashboard.entrypoints=web"
-#      # We need to let traefik know port and url scheme
-#      # we are doing that via service
-#      - "traefik.http.routers.dashboard.service=dashboard"
-#      # This is the port traefik will forward requests to
-#      - "traefik.http.services.dashboard.loadbalancer.server.port=443"
-#      # And this is so it knows that the requests will be TLS
-#      - "traefik.http.services.dashboard.loadbalancer.server.scheme=https"
-
-
-  # user-service:
-  #   build: ./user-service
-  #   labels:
-  #     - "traefik.http.routers.user-service.rule=Host(`user-service.local`)"
-  #     - "traefik.http.routers.user-service.entrypoints=websecure"
-  #     - "traefik.http.services.user-service.loadbalancer.server.port=8000"
-  #   networks:
-  #     - backend
-
-  # tournament-service:
-  #   build: ./tournament-service
-  #   labels:
-  #     - "traefik.http.routers.tournament-service.rule=Host(`tournament-service.local`)"
-  #     - "traefik.http.routers.tournament-service.entrypoints=websecure"
-  #     - "traefik.http.services.tournament-service.loadbalancer.server.port=8000"
-  #   networks:
-  #     - backend
-
-  # matchmaking-service:
-  #   build: ./matchmaking-service
-  #   labels:
-  #     - "traefik.http.routers.matchmaking-service.rule=Host(`matchmaking-service.local`)"
-  #     - "traefik.http.routers.matchmaking-service.entrypoints=websecure"
-  #     - "traefik.http.services.matchmaking-service.loadbalancer.server.port=8000"
-  #   networks:
-  #     - backend
-
-  # game-session-service:
-  #   build: ./game-session-service
-  #   labels:
-  #     - "traefik.http.routers.game-session-service.rule=Host(`game-session-service.local`)"
-  #     - "traefik.http.routers.game-session-service.entrypoints=websecure"
-  #     - "traefik.http.services.game-session-service.loadbalancer.server.port=8000"
-  #   networks:
-  #     - backend
-
-  # frontend-service:
-  #   build: ./frontend-service
-  #   labels:
-  #     - "traefik.http.routers.frontend-service.rule=Host(`frontend.local`)"
-  #     - "traefik.http.routers.frontend-service.entrypoints=websecure"
-  #     - "traefik.http.services.frontend-service.loadbalancer.server.port=3000"
-  #   networks:
-  #     - frontend

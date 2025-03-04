@@ -6,6 +6,7 @@
 secrets/
 .vscode/
 *.log
+.tmp_extract
 # services/authentication-service
 # services/backend-service
 # services/dns-service

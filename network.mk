@@ -51,30 +51,22 @@ testNG:
 	-docker exec -it nginx sh -c "curl -fk https://\$$DOMAIN"
 	@echo;echo "----" ;
 	-docker exec -it nginx sh -c "curl -Ik https://\$$DOMAIN"
-# -docker exec -it nginx openssl s_client -connect lilizarr.pong.42.fr:443
-# @echo;echo "----" ;
-# -docker exec -it nginx sh -c "openssl s_client -connect https://\$$DOMAIN"
 
 testWeb:
-# -curl -fk --resolve lilizarr.42.fr:443:$(shell hostname -i) https://lilizarr.42.fr/
 	@echo ----
 	-curl -I http://$(shell hostname)
 	@echo ----
 	-curl -I https://$(shell hostname)
 	@echo ----
 	-curl -fk https://$(shell hostname)
-# @echo ----
-# -openssl s_client -connect lilizarr.42.fr:443 -showcerts
 	@echo ----
 	-openssl s_client -connect $(shell hostname):443 -showcerts
 	@echo ----
 	-curl -k https://$(shell hostname)
 	@echo;echo "----" ;
-# -openssl s_client -connect lilizarr.pong.42.fr:443
-#	@docker exec -it nginx openssl s_client -connect lilizarr.pong.42.fr:443
+
 
 browser:
-#	- firefox --private-window https://lilizarr.42.fr &
 	- firefox --private-window $(shell hostname) &
 
 curlt:
@@ -94,3 +86,9 @@ curlt:
 	nslookup -type=NS 42wolfsburg.de
 	@echo ----
 	nmcli dev show | grep DNS
+
+pingClient:
+	docker exec -it --privileged traefik sh -c "nslookup 10.12.1.1"
+	docker exec -it --privileged traefik sh -c "nslookup -type=NS 42wolfsburg.de"
+pingDNS:
+	docker run --rm --dns 10.51.1.253 --dns-search 42wolfsburg.de ft_transcendence-fastify:latest /bin/sh -c "nslookup 10.12.1.1"

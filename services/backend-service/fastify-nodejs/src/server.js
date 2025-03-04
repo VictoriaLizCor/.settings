@@ -10,6 +10,10 @@ const fastify = Fastify({
   trustProxy: true 
 });
 
+fastify.addHook('onRequest', (request, reply, done) => {
+	request.log.info({ ip: request.ip }, 'Incoming request');
+	done();
+});
 
 fastify.get('/', async (request, reply) => {
 	return { hello: 'world', ip: request.ip };

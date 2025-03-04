@@ -59,10 +59,34 @@ encrypt:
 	@rm -f .tmp.enc .tmp.tar.gz
 	@tar -czf .tmp.tar.gz secrets/
 	@bash -c ' \
-	read -sp "Please enter some input: " user_input; \
+	read -sp "Enter encryption passphrase: " ENCRYPTION_PASSPHRASE; \
 	echo; \
-	gpg --batch --passphrase "$$user_input" --symmetric --cipher-algo AES256 -o .tmp.enc .tmp.tar.gz '
-	@rm .tmp.tar.gz
+	gpg --batch --passphrase "$$ENCRYPTION_PASSPHRASE" --symmetric --cipher-algo AES256 -o .tmp.enc .tmp.tar.gz; \
+	if [ $$? -ne 0 ]; then \
+		echo "Error: Encryption failed."; \
+		rm -f .tmp.tar.gz .tmp.enc; \
+		exit 1; \
+	fi'
+	@rm .tmp.tar.gz\
+
+decrypt:
+	@bash -c ' \
+	read -sp "Enter decryption key: " DECRYPTION_KEY; \
+	echo; \
+	if [ -f .tmp.enc ]; then \
+		gpg --batch --passphrase "$$DECRYPTION_KEY" -o .tmp.tar.gz -d .tmp.enc; \
+		if [ $$? -ne 0 ]; then \
+			echo "Error: Decryption failed."; \
+			shred -u .env; \
+			exit 1; \
+		fi; \
+		mkdir -p .tmp_extract; \
+		tar -xzf .tmp.tar.gz -C .tmp_extract; \
+		rm .tmp.tar.gz; \
+	else \
+		echo "Error: .tmp.enc file not found."; \
+		exit 1; \
+	fi'
 
 list:
 	@find services/ -type d -name '*-service'
