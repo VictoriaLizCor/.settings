@@ -2,27 +2,29 @@ entryPoints:
   web:
     address: ":80"
     # allowACMEByPass: true
-    # http:
-    #   redirections:
-    #     entryPoint:
-    #       to: websecure
-    #       scheme: https
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
     forwardedHeaders:
       trustedIPs:
         - "0.0.0.0/0"
   websecure:
     address: ":443"
-    allowACMEByPass: true
+    # allowACMEByPass: true
     http2:
       maxConcurrentStreams: 250
     http:
       tls:
-        certResolver: myresolver
+        # certResolver: myresolver
         domains:
           - main: "{{ env 'DOMAIN' }}"
             sans:
               - "{{ env 'IP' }}"
-            #   - "*.{{ env 'DNS_SEARCH' }}"
+              - "*.{{ env 'DNS_SEARCH' }}"
+              - "localhost"
+              - "127.0.0.1"
     forwardedHeaders:
       trustedIPs:
         - "0.0.0.0/0"
@@ -38,15 +40,15 @@ providers:
 # self certificates
 tls:
   certificates:
-    - certFile: "/run/secrets/ssl_crt"
-      keyFile: "/run/secrets/ssl_key"
+    - certFile: "/run/secrets/ssl_crt.crt"
+      keyFile: "/run/secrets/ssl_key.key"
       stores:
         - default
   stores:
     default:
       defaultCertificate:
-        certFile: "/run/secrets/ssl_crt"
-        keyFile: "/run/secrets/ssl_key"
+        certFile: "/run/secrets/ssl_crt.crt"
+        keyFile: "/run/secrets/ssl_key.key"
   options:
     default:
       minVersion: VersionTLS13
@@ -70,5 +72,5 @@ global:
   checkNewVersion: false
   sendAnonymousUsage: false
 api:
-  dashboard: false
+  dashboard: true
   insecure: true

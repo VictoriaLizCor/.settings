@@ -102,6 +102,8 @@ alpine:
 	@docker run --name temp-alpine alpine:latest sleep 1
 	@docker commit --change "LABEL keep=true" temp-alpine alpine:latest-labeled
 	@docker rm temp-alpine
+rmCert:
+	rm -rf ./secrets/ssl/*
 cert:
 	$(call createDir,$(SSL))
 	@HOST=$(shell hostname -s) ; \
@@ -109,7 +111,7 @@ cert:
 		printf "$(LF)  🟢 $(P_BLUE)Certificates already exists $(P_NC)\n"; \
 	else \
 		rm -rf $(SSL)/*; \
-		docker run --rm --hostname 42wolfsburg.de -v $(SSL):/certs -it alpine:latest sh -c 'apk add --no-cache nss-tools curl ca-certificates && curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64" && mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert && chmod +x /usr/local/bin/mkcert && mkcert -install && mkcert -key-file /certs/$(shell hostname -s).key -cert-file /certs/$(shell hostname -s).crt $(shell hostname) && cp /root/.local/share/mkcert/rootCA.pem /certs/$(shell hostname -s).pem' ; \
+		docker run --rm --hostname 42wolfsburg.de -v $(SSL):/certs -it alpine:latest sh -c 'apk add --no-cache nss-tools curl ca-certificates && curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64" && mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert && chmod +x /usr/local/bin/mkcert && mkcert -install && mkcert -key-file /certs/$(shell hostname -s).key -cert-file /certs/$(shell hostname -s).crt $(shell hostname) $(shell hostname -i) localhost 127.0.0.1 && cp /root/.local/share/mkcert/rootCA.pem /certs/$(shell hostname -s).pem' ; \
 	fi
 cerbot:
 	$(call createDir,$(SSL))

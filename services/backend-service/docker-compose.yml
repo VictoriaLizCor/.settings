@@ -40,8 +40,8 @@ services:
       - backend
     labels:
       - traefik.enable=true
-      - "traefik.http.routers.fastify.rule=Host(`${DOMAIN}`) || Host(`${IP}`)"
-      - "traefik.http.routers.fastify.entrypoints=websecure,web"
+      - "traefik.http.routers.fastify.rule=Host(`${DOMAIN}`) || Host(`${IP}`) || Host(`127.0.0.1`)"
+      - "traefik.http.routers.fastify.entrypoints=websecure"
       - "traefik.http.services.fastify.loadbalancer.server.port=3000"
       # - "traefik.http.middlewares.fastify.forwardedHeaders.insecure=true"
     #   - "traefik.http.services.fastify.loadbalancer.server.scheme=https"

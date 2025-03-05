@@ -1,7 +1,7 @@
 secrets:
-  ssl_key:
+  ssl_key.key:
     file: ${SSL_KEY}
-  ssl_crt:
+  ssl_crt.crt:
     file: ${SSL_CRT}
   ssl_pem:
     file: ${SSL_PEM}
@@ -51,9 +51,12 @@ services:
       - ${DNS_SERVER}
     dns_search:
       - ${DNS_SEARCH}
+    extra_hosts:
+      - "${DOMAIN}:127.0.0.1"
+      - "${DOMAIN}:${IP}"
     secrets:
-      - ssl_key
-      - ssl_crt
+      - ssl_key.key
+      - ssl_crt.crt
       - ssl_pem
       - ssl_email
     volumes:
@@ -61,7 +64,6 @@ services:
       - "./config/traefik.yml:/etc/traefik/traefik.yml:ro"
       # - "./dynamic/config.yml:/etc/traefik/etc/traefik/config.yml:ro"
       - "traefik-logs:/etc/traefik/"
-      # - "${SSL_PATH}:/etc/traefik/certs"  # Mount the directory containing your certificates
     networks:
       - frontend
       - backend

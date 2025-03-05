@@ -38,7 +38,6 @@ http:
       service: fastify-service
       entryPoints:
         - websecure
-        - web
 
     # user-service:
     #   rule: "Host(`user-service.local`)"
