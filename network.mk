@@ -72,6 +72,7 @@ browser:
 	firefox --private-window "127.0.0.1" && \
 	firefox --private-window "$(shell hostname -i)"
 
+
 curlt:
 	curl -v -H "Host: c3r2s3.42wolfsburg.de" https://localhost:443
 	curl -v -H "Host: c3r2s3.42wolfsburg.de" http://localhost:80
