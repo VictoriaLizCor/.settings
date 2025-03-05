@@ -27,7 +27,6 @@ export $(grep -vE '^(AUTH_KEY|SECURE_AUTH_KEY|LOGGED_IN_KEY|NONCE_KEY|AUTH_SALT|
 export DATA=$DATA/$USER/data
 export DOMAIN=$(hostname)
 IP=$(hostname -i)
-# IP=$(ifconfig `ifconfig wlan1 >/dev/null 2>&1 && echo wlan1 || echo enp6s0` |  grep 'inet ' | awk '{print $2}')
 
 if [ "$DEBUG" -eq 1 ]; then
 	echo "########### ---- Debug mode is enabled ---- ###########3"
@@ -53,15 +52,12 @@ TRAEFIK_VOL=$DATA/traefik
 SSL_PATH=$PWD/$SSL
 SSL_CRT=$PWD/$SSL/$(hostname -s).crt
 SSL_KEY=$PWD/$SSL/$(hostname -s).key
-SSL_PEM=$PWD/$SSL/$(hostname -s).pem
+SSL_PEM=$PWD/$SSL/rootCA.pem
 SSL_EMAIL=$PWD/$SSL/adminEmail.txt
 SSL_PORT=$SSL_PORT
-
-
 # ---------- Backend ---------- #
 
 EOF
-
 
 # echo -e "\nContent: \n" && tree --dirsfirst ./
 echo

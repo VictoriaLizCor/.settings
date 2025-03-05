@@ -22,9 +22,9 @@ entryPoints:
           - main: "{{ env 'DOMAIN' }}"
             sans:
               - "{{ env 'IP' }}"
-              - "*.{{ env 'DNS_SEARCH' }}"
               - "localhost"
               - "127.0.0.1"
+              - "*.{{ env 'DNS_SEARCH' }}"
     forwardedHeaders:
       trustedIPs:
         - "0.0.0.0/0"
@@ -34,8 +34,8 @@ providers:
     exposedByDefault: false
     endpoint: "unix:///var/run/docker.sock"
 #   file:
-    # filename: /etc/traefik/etc/traefik/dynamic.yml
-    # watch: true
+#     filename: /etc/traefik/dynamic_conf.yml
+#     watch: true
 
 # self certificates
 tls:
@@ -55,6 +55,10 @@ tls:
       cipherSuites:
         - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
         - TLS_RSA_WITH_AES_256_GCM_SHA384
+      clientAuth:
+        caFiles:
+          - "/run/secrets/ssl_pem"
+        clientAuthType: RequireAndVerifyClientCert
 
 # acme let's encrypt certificates
 certificatesResolvers:

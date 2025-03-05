@@ -1,9 +1,35 @@
-http:
-  middlewares:
-    redirect-to-https:
-      redirectScheme:
-        scheme: https
-        permanent: true
+# http:
+#   routers:
+#     main-router:
+#       entryPoints:
+#         - web
+#         - websecure
+#       rule: "Host(`{{ env 'DOMAIN_TEST' }}`) || Host(`127.0.0.1`) || Host(`{{ env 'IP'}}`)"
+#       middlewares:
+#         - redirect-to-newdomain
+#       service: fastify-service
+#       tls: true
+#         # certResolver: myresolver
+#       priority: 10
+
+#   middlewares:
+#     redirect-to-newdomain:
+#       redirectRegex:
+#         regex: "^https?://(?:www\\.)?old-domain\\.com(.*)"
+#         replacement: "https://{{ env 'DOMAIN_TEST' }}$${1}"
+#         permanent: true
+
+  # services:
+  #   fastify-service:
+  #     loadBalancer:
+  #       servers:
+  #         - url: "http://fastify:3000"
+# http:
+#   middlewares:
+#     redirect-to-https:
+#       redirectScheme:
+#         scheme: https
+#         permanent: true
     # ipwhitelist:
     #   ipWhiteList:
     #     sourceRange:
@@ -31,13 +57,13 @@ http:
   #     middlewares:
   #       - ipwhitelist
   #     service: fastify-service
-http:
-  routers:
-    fastify:
-      rule: "Host(`fastify-service`)"
-      service: fastify-service
-      entryPoints:
-        - websecure
+# http:
+#   routers:
+#     fastify:
+#       rule: "Host(`fastify-service`)"
+#       service: fastify-service
+#       entryPoints:
+#         - websecure
 
     # user-service:
     #   rule: "Host(`user-service.local`)"

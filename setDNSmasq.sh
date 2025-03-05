@@ -5,13 +5,13 @@ port=5053
 # Listen on all network interfaces
 domain-needed
 #listen-address=127.0.0.1
-#listen-address=10.12.1.1
+# listen-address=$(hostname -i)
 listen-address=0.0.0.0
 
 #bind-interfaces
 
 # Add domain-specific address
-address=/$(hostname)/127.0.0.1
+address=/pong.42wolfsburg.de/127.0.0.1
 
 #Upstream DNS servers
 server=10.51.1.253
