@@ -5,8 +5,7 @@ CMD		:= docker compose
 PROJECT_ROOT:= $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../)
 GIT_REPO	:=$(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../..)
 CURRENT		:= $(shell basename $$PWD)
-# DOCKER_DATA := '{"data-root": "/sgoinfre/$(USER)/docker/"}'
-VOLUMES		:= /sgoinfre/$(USER)/data
+VOLUMES		:= ./volumes
 
 SSL			:= ./secrets/ssl
 export TOKEN=$(shell grep '^TOKEN' secrets/.env.tmp | cut -d '=' -f2 | xargs)

@@ -18,10 +18,10 @@ volumes:
   traefik-logs:
     driver: local
     name: traefik-vol
-    driver_opts:
-      type: bind
-      o: bind
-      device: ${TRAEFIK_VOL}
+    # driver_opts:
+    #   type: bind
+    #   o: bind
+    #   device: ./
 
 
 services:
@@ -37,21 +37,21 @@ services:
       DOMAIN_TEST: ${DOMAIN_TEST}
       HOST_USER: ${HOST_USER}
       SSL_PORT: ${SSL_PORT}
-      DNS_SERVER: ${DNS_SERVER}
-      DNS_SEARCH: ${DNS_SEARCH}
+    #   DNS_SERVER: ${DNS_SERVER}
+    #   DNS_SEARCH: ${DNS_SEARCH}
       IP: ${IP}
       TZ: Europe/Berlin
     ports:
       - "80:80"
       - "443:443"
       - "8080:8080"
-    dns:
-      - ${DNS_SERVER}
-      - 127.0.0.1
-    dns_search:
-      - ${DNS_SEARCH}
-    dns_opt:
-      - "port=5053"  # Port for local DNS server
+    # dns:
+    #   - ${DNS_SERVER}
+    #   - 127.0.0.1
+    # dns_search:
+    #   - ${DNS_SEARCH}
+    # dns_opt:
+    #   - "port=5053"  # Port for local DNS server
     extra_hosts:
       - "${DOMAIN}:127.0.0.1"
       - "${DOMAIN}:${IP}"

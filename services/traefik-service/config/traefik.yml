@@ -12,7 +12,7 @@ entryPoints:
         - "0.0.0.0/0"
   websecure:
     address: ":443"
-    # allowACMEByPass: true
+    allowACMEByPass: true
     http2:
       maxConcurrentStreams: 250
     http:
@@ -24,7 +24,7 @@ entryPoints:
               - "{{ env 'IP' }}"
               - "localhost"
               - "127.0.0.1"
-              - "*.{{ env 'DNS_SEARCH' }}"
+              # - "*.{{ env 'DNS_SEARCH' }}"
     forwardedHeaders:
       trustedIPs:
         - "0.0.0.0/0"
@@ -64,8 +64,8 @@ tls:
 certificatesResolvers:
   myresolver:
     acme:
-    #   email: " lilizarr@student.42wolfsburg.de"
-      email: "/run/secrets/ssl_email"
+      email: " lilizarr@student.42wolfsburg.de"
+      # email: "/run/secrets/ssl_email"
       storage: "/etc/traefik/acme.json"
       tlsChallenge: {}
 

@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-RUN apk update && apk add sqlite
+RUN apk update && apk add --no-cache curl ca-certificates openssl sqlite
 
 # Create app directory
 # WORKDIR /app

@@ -2,10 +2,10 @@ volumes:
   fastify-vol:
     driver: local
     name: fastify-vol
-#     driver_opts:
-#       type: none
-#       o: bind
-#       device: ${NGINX_VOL}
+    # driver_opts:
+    #   type: bind
+    #   o: bind
+    #   device: ./
 
 # networks:
 #   backend:
@@ -25,21 +25,21 @@ services:
     environment:
       DOMAIN: ${DOMAIN}
       IP: ${IP}
-      DNS_SERVER: ${DNS_SERVER}
-      DNS_SEARCH: ${DNS_SEARCH}
+    #   DNS_SERVER: ${DNS_SERVER}
+    #   DNS_SEARCH: ${DNS_SEARCH}
       DOMAIN_TEST: ${DOMAIN_TEST}
-    dns:
-      - ${DNS_SERVER}
-    dns_search:
-      - ${DNS_SEARCH}
+    # dns:
+    #   - ${DNS_SERVER}
+    # dns_search:
+    #   - ${DNS_SEARCH}
     networks:
     #   - internal
       - backend
     labels:
       - "traefik.enable=true"
       #
-      # Router for canonical domain requests (highest priority)
-      - "traefik.http.routers.fastify-canonical.rule=Host(`${DOMAIN}`) || Host(`${IP}`) || Host(`127.0.0.1)"
+     # Router for canonical domain requests (highest priority)
+      - "traefik.http.routers.fastify-canonical.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.fastify-canonical.entrypoints=websecure"
       - "traefik.http.routers.fastify-canonical.priority=30"
       #
@@ -49,17 +49,13 @@ services:
       - "traefik.http.routers.fastify-redirect.priority=20"
       - "traefik.http.routers.fastify-redirect.middlewares=redirect-to-canonical"
       #
-      # -------------------------------------------------------
-      # Redirect Middleware
-      # -------------------------------------------------------
-      # This middleware issues a redirect to the canonical HTTPS URL.
-      # Since it operates on HTTP, the client gets a 301 response before TLS.
-      - "traefik.http.middlewares.redirect-to-canonical.redirectscheme.scheme=https"
-    #   - "traefik.http.middlewares.redirect-to-canonical.redirectregex.regex=^https?://(?:${DOMAIN}|${IP}|127\\.0\\.0\\.1)(.*)"
-    #   - "traefik.http.middlewares.redirect-to-canonical.redirectregex.regex=^http://(?:${IP}|127\\.0\\.0\\.1|${DOMAIN})(.*)"
-    #   - "traefik.http.middlewares.redirect-to-canonical.redirectregex.replacement=https://${DOMAIN}$$1"
-      - "traefik.http.middlewares.redirect-to-canonical.redirectscheme.permanent=true"
-
+      # Middleware: Redirect requests from non-canonical hosts to the canonical domain.
+      # Note: In the regex, dots are escaped (\\.) and use $$ to inject a literal $ in the replacement.
+      - "traefik.http.middlewares.redirect-to-canonical.redirectregex.regex=^https?://(?:${IP}|127\\.0\\.0\\.1)(.*)"
+      - "traefik.http.middlewares.redirect-to-canonical.redirectregex.replacement=https://${DOMAIN}$$1"
+      - "traefik.http.middlewares.redirect-to-canonical.redirectregex.permanent=true"
+      #
+      # Define the service to which both routers send traffic.
       - "traefik.http.services.fastify-service.loadbalancer.server.port=3000"
 
   # frontend:
