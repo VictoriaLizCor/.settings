@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 if [ -f .secrets/.env.tmp ]; then
 	echo "File with secrets not found. Please contact microservices Admin for further information"
 	exit 1
@@ -31,6 +31,7 @@ IP=$(hostname -i)
 if [ "$DEBUG" -eq 1 ]; then
 	echo "########### ---- Debug mode is enabled ---- ###########3"
 fi
+# DNS_SERVER=$(#nmcli dev show | grep DNS | awk '{print $2}')
 echo $ADMIN_EMAIL > ./secrets/ssl/adminEmail.txt
 cat <<EOF > .env
 USER=$USER
@@ -42,7 +43,7 @@ DOMAIN=$DOMAIN
 DOMAIN_TEST=$DOMAIN_TEST
 ADMIN_EMAIL=$ADMIN_EMAIL
 IP=$IP
-DNS_SERVER=$(nmcli dev show | grep DNS | awk '{print $2}')
+
 DNS_SEARCH=$DNS_SEARCH
 # ---------- VOLUMES ---------- #
 NGINX_VOL=$DATA/nginx
