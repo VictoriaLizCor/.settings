@@ -38,11 +38,15 @@ services:
     labels:
       - "traefik.enable=true"
       #
-     # Router for canonical domain requests (highest priority)
+      # Router for canonical domain requests (highest priority)
       - "traefik.http.routers.fastify-canonical.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.fastify-canonical.entrypoints=websecure"
       - "traefik.http.routers.fastify-canonical.priority=30"
+    #   - "traefik.http.routers.fastify-canonical.middlewares=disable-hsts"
       #
+      # Define a middleware to disable HSTS
+    #   - "traefik.http.middlewares.disable-hsts.headers.stsSeconds=0"
+
       # Router that catches other requests (IP or non‐canonical domain) and redirects them
       - "traefik.http.routers.fastify-redirect.rule=Host(`${DOMAIN}`) || Host(`${IP}`) || Host(`127.0.0.1`)"
       - "traefik.http.routers.fastify-redirect.entrypoints=web,websecure"

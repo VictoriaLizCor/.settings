@@ -42,7 +42,7 @@ DOMAIN=$DOMAIN
 DOMAIN_TEST=$DOMAIN_TEST
 ADMIN_EMAIL=$ADMIN_EMAIL
 IP=$IP
-DNS_SERVER=$(nmcli dev show | grep DNS | awk '{print $2}')
+# DNS_SERVER=$(#nmcli dev show | grep DNS | awk '{print $2}')
 DNS_SEARCH=$DNS_SEARCH
 # ---------- VOLUMES ---------- #
 NGINX_VOL=$DATA/nginx
