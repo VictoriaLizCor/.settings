@@ -26,7 +26,7 @@ DEBUG="$1"
 export $(grep -vE '^(AUTH_KEY|SECURE_AUTH_KEY|LOGGED_IN_KEY|NONCE_KEY|AUTH_SALT|SECURE_AUTH_SALT|LOGGED_IN_SALT|NONCE_SALT|TOKEN)=' ./secrets/.env.tmp)
 export DATA=$DATA/$USER/data
 export DOMAIN=$(hostname)
-IP=$(hostname -i)
+IP=$(ip route get 8.8.8.8 | awk '{print $7}')
 
 if [ "$DEBUG" -eq 1 ]; then
 	echo "########### ---- Debug mode is enabled ---- ###########3"
