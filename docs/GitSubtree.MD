@@ -28,7 +28,7 @@ git remote add authentication https://github.com/example/component.git
 git remote set-url authentication https://$(cat $TOKEN)@github.com/FT-Transcendence-February-2025/authentication-service.git
  git fetch component main
 git subtree add --prefix=services/authentication-service/src authentication main
-
+  git subtree add --prefix=component component main --squash
 ```
 
 ### B. Import the Repository as a Subtree
