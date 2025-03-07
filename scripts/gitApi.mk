@@ -57,7 +57,7 @@ rules:
 reposAdmin:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
 	-H "Accept: application/vnd.github+json" \
-	`$(MAKE) --no-print reposApi` | jq -r '.[] | select(.permissions.admin == true) | .url'
+	`$(MAKE) --no-print reposApi` | jq -r '.[] | select(.permissions.admin == true) | "\(.url) \n\(.html_url) \n"'
 
 microRepo:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
