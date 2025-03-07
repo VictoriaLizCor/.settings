@@ -1,17 +1,20 @@
 secrets:
   ssl_key:
-    file: ${NGINX_KEY}
-  ssl_cert:
-    file: ${NGINX_CERT}
+    file: ${SSL_KEY}
+  ssl_crt:
+    file: ${SSL_CRT}
+  ssl_pem:
+    file: ${SSL_PEM}
 
 volumes:
   nginx-logs:
     driver: local
-    # name: nginx-vol
-    # driver_opts:
-    #   type: none
-    #   o: bind
-    #   device: ${NGINX_VOL}
+    name: nginx-vol
+    driver_opts:
+      type: bind
+      o: bind
+      device: ${NGINX_VOL}
+
   dns-logs:
     driver: local
     # name: dns-vol
@@ -24,9 +27,23 @@ networks:
   internal:
     driver: bridge
     name: internal
-  external:
+  dns-tier:
+    name: dns-tier
     driver: bridge
-    name: external
+    driver_opts:
+      com.docker.network.driver.mtu: 1350
+      com.docker.network.bridge.host_binding_ipv4: "0.0.0.0"
+  host:
+    external: true
+    driver: host
+#   my_macvlan:
+#     driver: macvlan
+#     driver_opts:
+#       parent: enp6s0
+#     ipam:
+#       config:
+#         - subnet: 10.12.0.0/16
+#           gateway: 10.12.1.1
 
 services:
   nginx:
@@ -35,50 +52,96 @@ services:
       dockerfile: Dockerfile
       args:
         DOMAIN: ${DOMAIN}
+        DOMAIN_TEST: ${DOMAIN_TEST}
         HOST_USER: ${HOST_USER}
         USER_ID: ${USER_ID}
         GROUP_ID: ${GROUP_ID}
     container_name: nginx
-    user: ${HOST_USER}
+    # user: ${USER_ID}:${GROUP_ID}
     image: nginx
+    hostname: nginx
     secrets:
       - ssl_key
       - ssl_cert
     volumes:
-      -  nginx-logs:/var/www/html
+      - ${NGINX_VOL}:/usr/share/nginx/html
     ports:
-      - $NGINX_PORT:$NGINX_PORT
+      - $SSL_PORT:$SSL_PORT
     environment:
       DOMAIN: ${DOMAIN}
+      DOMAIN_TEST: ${DOMAIN_TEST}
       HOST_USER: ${HOST_USER}
-      NGINX_PORT: ${NGINX_PORT}
-    # depends_on:
-    #   wordpress:
-    #     condition: service_healthy
+      SSL_PORT: ${SSL_PORT}
+      IP: ${IP}
     networks:
-      - external
+      - internal
+    #   - my_macvlan
+    #   - host
     restart: on-failure
     expose:
-      - ${NGINX_PORT}
+      - ${SSL_PORT}
     healthcheck:
       test:
-        ["CMD", "curl", "-fk", "https://${DOMAIN}/health.html"]
+        ["CMD", "curl", "-fk", "https://${DOMAIN}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    extra_hosts:
+      - "${DOMAIN}:127.0.0.1"
+      - "localhost:127.0.0.1"
+      - "${DOMAIN}:${IP}"
+    # dns:
+    #   - ${IP}
+    #   - 127.0.0.1
+    depends_on:
+      - fastify
+    #   fastify:
+        # condition: service_healthy
+    # labels:
+    #   - "traefik.http.routers.nginx.rule=Host(`${DOMAIN}`)"
 
-  dnsmasq:
-    # build:
-      # context: requirements/nginx
-      # dockerfile: Dockerfile
-    container_name: dnsmasq
-    image: andyshinn/dnsmasq:2.78
-    cap_add:
-      - NET_ADMIN
-    ports:
-      - "5053:53/udp"
-    volumes:
-      - dns-logs:/etc/dnsmasq.conf
-      - ./DNS/conf/dnsmasq.conf:/etc/dnsmasq.conf
-    networks:
-      - external
+  # dnsmasq:
+  #   # build:
+  #     # dockerfile: Dockerfile
+  #   container_name: dnsmasq
+  #   image: andyshinn/dnsmasq:2.78
+  #   hostname: dnsmasq
+  #   environment:
+  #     DOMAIN: ${DOMAIN}
+  #     IP: ${IP}
+  #   cap_add:
+  #     - NET_ADMIN
+  #   ports:
+  #     - "5053:53/udp"
+  #   volumes:
+  #     - dns-logs:/etc/dnsmasq.conf
+  #     - ./DNS/conf/dnsmasq.conf:/etc/dnsmasq.conf
+  #   networks:
+  #     - dns-tier
+  #     - internal
+
+#   traefik:
+#     image: traefik:v2.5
+#     container_name: traefik
+#     ports:
+#       - "80:80"
+#       - "443:443"
+#     volumes:
+#       - $XDG_RUNTIME_DIR/docker.sock:/var/run/docker.sock
+#     command:
+#       - "--api.insecure=true"
+#       - "--providers.docker=true"
+#       - "--entrypoints.web.address=:80"
+#     networks:
+#       - dns-tier
+  # dns:
+  #   build:
+  #     context: ./DNS/
+  #   restart: always
+  #   ports:
+  #     - 5053:53
+  #     - 5053:53/udp
+  #   volumes:
+  #     - ./dns/named.conf:/etc/bind/named.conf
+  #     - ./dns/zone/:/etc/bind/zone/
+  #   command: named -c /etc/bind/named.conf -g -u named

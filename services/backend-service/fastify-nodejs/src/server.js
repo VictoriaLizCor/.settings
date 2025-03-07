@@ -1,17 +1,36 @@
 // server.js
-const fastify = require('fastify')({ logger: true });
+import Fastify from 'fastify';
+import dotenv from 'dotenv';
 
-fastify.get('/', async (request, reply) => {
-  return { hello: 'world' };
+dotenv.config();
+
+// Enable trustProxy to trust the X-Forwarded-For headers
+const fastify = Fastify({ 
+  logger: true,
+  trustProxy: true 
 });
 
-const start = async () => {
-  try {
-    await fastify.listen(3000, '0.0.0.0');
-    fastify.log.info(`Server listening on ${fastify.server.address().port}`);
-  } catch (err) {
-    fastify.log.error(err);
-    process.exit(1);
-  }
-};
-start();
+fastify.addHook('onRequest', (request, reply, done) => {
+	request.log.info({ ip: request.ip }, 'Incoming request');
+	done();
+});
+
+fastify.get('/', async (request, reply) => {
+	return { hello: 'world', ip: request.ip };
+  });
+  
+  fastify.get('/health', async (request, reply) => {
+	return { status: 'ok' };
+  });
+  
+  const start = async () => {
+	try {
+	  await fastify.listen({ port: 3000, host: '0.0.0.0' });
+	  fastify.log.info(`Server listening on ${fastify.server.address().port}`);
+	} catch (err) {
+	  fastify.log.error(err);
+	  process.exit(1);
+	}
+  };
+  
+  start();
