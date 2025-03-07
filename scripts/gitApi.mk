@@ -59,6 +59,9 @@ reposAdmin:
 	-H "Accept: application/vnd.github+json" \
 	`$(MAKE) --no-print reposApi` | jq -r '.[] | select(.permissions.admin == true) | "\(.url) \n\(.html_url) \n"'
 
+listIssues:
+	@curl -s -H "Authorization: token `cat $(TOKEN)`"     -H "Accept: application/vnd.github+json"     https://api.github.com/repos/FT-Transcendence-February-2025/microservices/issues | jq -r '.[] | "\(.title):\n  https://github.com/FT-Transcendence-February-2025/microservices/issues/\(.number)"'
+
 microRepo:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
 	-H "Accept: application/vnd.github+json" \
