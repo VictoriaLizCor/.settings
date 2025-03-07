@@ -19,7 +19,7 @@ DOCKER_BUILDKIT=1
 -include $(wildcard scripts/*.mk)
 # -include tools.mk network.mk gitApi.mk
 
-#-------------------- RULES -------------------------#
+#------------------ RULES -----------------------#
 
 all: buildAll up showAll
 
