@@ -15,14 +15,14 @@ export TOKEN=$(shell grep '^TOKEN' secrets/.env.tmp | cut -d '=' -f2 | xargs)
 # WP			:= $(SRCS)/requirements/wordpress
 # SERVICES	:= $(shell docker compose config --services | xargs -I {} mkdir -p $(VOLUMES)/{})
 NAME		:= ft_transcendence
-
+DOCKER_BUILDKIT=1
 -include tools.mk network.mk gitApi.mk
 
 #-------------------- RULES -------------------------#
 
 all: buildAll up showAll
 
-buildAll: volumes secrets
+buildAll: cert volumes secrets
 	@printf "\n$(LF)⚙️  $(P_BLUE) Building Images \n\n$(P_NC)";
 ifneq ($(D), 0)
 	@bash -c 'set -o pipefail; $(CMD) build --no-cache 2>&1 | tee build.log || { echo "Error: Docker compose build failed. Check build.log for details."; exit 1; }'
@@ -39,7 +39,7 @@ else
 	@bash -c 'set -o pipefail; $(CMD) up $$c --build || { echo "Error: Docker compose up failed. Check up.log for details."; exit 1; }'
 endif
 	@$(MAKE) --no-print showAll logs 
-	@printf "$(LF)\n$(D_GREEN)[✔] IP: $(shell ip route get 8.8.8.8 | awk '{print $7}') $(P_NC)\n"
+	@printf "$(LF)\n$(D_GREEN)[✔] IP: $(shell ip route get 8.8.8.8 | awk '{print $$7}') $(P_NC)\n"
 
 watchDocker:
 	@$(CMD) watch

@@ -16,6 +16,8 @@ services:
     build:
       context: ./fastify-nodejs
       dockerfile: Dockerfile
+      args:
+        - DNS_SERVER=8.8.8.8
     container_name: fastify
     hostname: fastify
     volumes:
@@ -23,6 +25,7 @@ services:
     # working_dir: /usr/src/app
     restart: unless-stopped
     environment:
+      NODE_ENV: development
       DOMAIN: ${DOMAIN}
       IP: ${IP}
     #   DNS_SERVER: ${DNS_SERVER}
