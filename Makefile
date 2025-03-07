@@ -39,6 +39,7 @@ else
 	@bash -c 'set -o pipefail; $(CMD) up $$c --build || { echo "Error: Docker compose up failed. Check up.log for details."; exit 1; }'
 endif
 	@$(MAKE) --no-print showAll logs 
+	@printf "$(LF)\n$(D_GREEN)[✔] IP: $(shell ip route get 8.8.8.8 | awk '{print $7}') $(P_NC)\n"
 
 watchDocker:
 	@$(CMD) watch
