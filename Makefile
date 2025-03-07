@@ -16,7 +16,8 @@ export TOKEN=$(shell grep '^TOKEN' secrets/.env.tmp | cut -d '=' -f2 | xargs)
 # SERVICES	:= $(shell docker compose config --services | xargs -I {} mkdir -p $(VOLUMES)/{})
 NAME		:= ft_transcendence
 DOCKER_BUILDKIT=1
--include tools.mk network.mk gitApi.mk
+-include $(wildcard scripts/*.mk)
+# -include tools.mk network.mk gitApi.mk
 
 #-------------------- RULES -------------------------#
 
@@ -99,12 +100,12 @@ rm-secrets: #clean_host
 
 secrets: #check_host 
 	@$(call createDir,./secrets)
-	@chmod +x generateSecrets.sh
+	@chmod +x scripts/generateSecrets.sh
 # 	@echo $(WHITE)
 # 	@export $(shell grep '^TMP' srcs/.env.tmp | xargs) && \#
 	@rm -f .env
-	@bash generateSecrets.sh $(D)
-# 	@bash generateSecrets.sh
+	@bash scripts/generateSecrets.sh $(D)
+# 	@bash scripts/generateSecrets.sh
 # 	@echo $(E_NC) > /dev/null
 
 # make logs c=fastify
