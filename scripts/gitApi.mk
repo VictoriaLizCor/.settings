@@ -49,6 +49,11 @@ setGit:
 	git config --local user.name "$$USER_NAME"; \
 	git config --local user.email "$$USER_EMAIL"
 
+rules:
+	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
+	-H "Accept: application/vnd.github+json" \
+	https://api.github.com/repos/FT-Transcendence-February-2025/microservices/branches/main/protection | jq
+
 reposAdmin:
 	@curl -s -H "Authorization: token `cat $(TOKEN)`" \
 	-H "Accept: application/vnd.github+json" \
