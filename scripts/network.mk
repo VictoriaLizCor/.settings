@@ -1,100 +1,64 @@
+
+# Default target, does nothing
 all:
 
-
+# Target to display the IP address of the active network interface
 ip:
-	-ifconfig `ifconfig wlan1 >/dev/null 2>&1 && echo wlan1 || echo enp6s0` |  grep 'inet ' | awk '{print $$2}'
-	@printf "$(LF)\n$(D_GREEN)[✔] IP: $(shell ip route get 8.8.8.8 | awk '{print $$7}') $(P_NC)\n"
+	# Command to get the IP address of the active network interface (wlan1 or enp6s0)
+	# and print it in green color
 
+# Target to display the subnet mask of the active network interface
 subnet:
-	ifconfig `ifconfig wlan1 >/dev/null 2>&1 && echo wlan1 || echo enp6s0` |  grep 'netmask ' | awk '{print $$2}'
-# obtain gateway for current device
+	# Command to get the subnet mask of the active network interface (wlan1 or enp6s0)
+
+# Target to obtain the gateway for the current device
 gate:
-	@traceroute -m 1 8.8.8.8 | awk 'NR==2 {print $$3}' | tr -d '()'
+	# Command to get the gateway IP address using traceroute
 
-
+# Target to ping a specific IP address (10.64.249.168) and check if traceroute is successful
 pingPixel:
-	@ip="10.64.249.168"; \
-	traceroute -m 3 -q 1 $$ip >/dev/null 2>&1; \
-	if [ $$? -eq 0 ]; then \
-		echo "Traceroute to $$ip was successful"; \
-	else \
-		echo "Traceroute to $$ip failed"; \
-	fi
+	# Command to perform a traceroute to the specified IP address and check the result
 
+# Target to ping a specific IP address (10.12.1.1) and check if traceroute is successful
 ping:
-	@ip="10.12.1.1"; \
-	traceroute -m 3 -q 1 $$ip >/dev/null 2>&1; \
-	if [ $$? -eq 0 ]; then \
-		echo "Traceroute to $$ip was successful"; \
-	else \
-		echo "Traceroute to $$ip failed"; \
-	fi
+	# Command to perform a traceroute to the specified IP address and check the result
 
+# Target to get the Docker host IP address
 dockerHostIP:
-	docker run --rm alpine ip route | awk '/default/ { print $3 }'
+	# Command to run an Alpine container and get the default gateway IP address
 
+# Target to perform DNS lookups for specific nameservers and domain
 42dns:
-	nslookup ns6.kasserver.com
-	nslookup ns4.kasserver.com
-	dig NS 42wolfsburg.de
+	# Commands to perform nslookup and dig for specific nameservers and domain
+
+# Target to check DNS configuration and perform various DNS lookups
 dnsCk:
-	DNS42=$(shell nmcli dev show | grep DNS | awk '{print $$2}') ; \
-	nslookup $(shell hostname) $$DNS42
-	-nslookup lilizarr.42.fr
-	-nslookup -type=NS $(shell hostname)
-	-dig $(shell hostname)
-	-dig NS $(shell hostname)
-	-openssl s_client -connect 42wolfsburg.de:443 -showcerts
-	netstat -tuln | grep 53
+	# Commands to check DNS configuration and perform nslookup and dig for the current hostname
 
+# Target to test Nginx server with curl commands
 testNG:
-	-docker exec -it nginx sh -c "curl -fk https://\$$DOMAIN"
-	@echo ----
-	-docker exec -it nginx sh -c "curl -fk https://\$$DOMAIN"
-	@echo;echo "----" ;
-	-docker exec -it nginx sh -c "curl -Ik https://\$$DOMAIN"
+	# Commands to perform curl requests to the Nginx server
 
+# Target to test web server with curl and openssl commands
 testWeb:
-	@echo ----
-	-curl -I http://$(shell hostname)
-	@echo ----
-	-curl -I https://$(shell hostname)
-	@echo ----
-	-curl -fk https://$(shell hostname)
-	@echo ----
-	-openssl s_client -connect $(shell hostname):443 -showcerts
-	@echo ----
-	-curl -k https://$(shell hostname)
-	@echo;echo "----" ;
+	# Commands to perform curl and openssl requests to the web server
 
-
+# Target to open Firefox in private window with specific URLs
 browser:
-	firefox --private-window && \
-	firefox --private-window "$(shell hostname)"
-	firefox --private-window "127.0.0.1" && \
-	firefox --private-window "$(shell hostname -i)"
+	# Commands to open Firefox in private window with the current hostname and IP address
 
-
+# Target to perform curl requests with specific headers
 curlt:
-	curl -v -H "Host: c3r2s3.42wolfsburg.de" https://localhost:443
-	curl -v -H "Host: c3r2s3.42wolfsburg.de" http://localhost:80
+	# Commands to perform curl requests with specific Host headers
 
+# Target to perform various tests for 42wolfsburg.de domain
 42test:
-	-curl -fk --resolve 42wolfsburg.de
-	@echo ----
-	-openssl s_client -connect 42wolfsburg.de:443 -showcerts
-	@echo ----
-	-DNS42=$(shell nmcli dev show | grep DNS | awk '{print $$2}') ; \
-	nslookup 42wolfsburg.de $$DNS42
-	@echo ----
-	dig NS 42wolfsburg.de
-	@echo ----
-	nslookup -type=NS 42wolfsburg.de
-	@echo ----
-	nmcli dev show | grep DNS
+	# Commands to perform curl, openssl, nslookup, and dig for 42wolfsburg.de domain
 
+# Target to ping a client IP address and perform DNS lookup using Docker
 pingClient:
-	docker exec -it --privileged traefik sh -c "nslookup 10.12.1.1"
-	docker exec -it --privileged traefik sh -c "nslookup -type=NS 42wolfsburg.de"
+	# Commands to perform nslookup for a specific IP address and domain using Docker
+
+# Target to ping a DNS server and perform DNS lookup using Docker
 pingDNS:
-	docker run --rm --dns 10.51.1.253 --dns-search 42wolfsburg.de ft_transcendence-fastify:latest /bin/sh -c "nslookup 10.12.1.1"
+	# Command to run a Docker container with specific DNS settings and perform nslookup

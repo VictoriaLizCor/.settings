@@ -1,6 +1,8 @@
 
+# Default target, does nothing
 all:
 
+# Rule to create a directory if it doesn't exist
 define createDir
 	@printf "\n$(LF)🚧  $(P_BLUE)Creating directory $(P_YELLOW)$(1) $(FG_TEXT)"; \
 	if [ -d "$(1)" ]; then \
@@ -12,10 +14,12 @@ define createDir
 	fi
 endef
 
+# Show list of all running Docker containers
 show:
 	@printf "$(LF)$(D_PURPLE)* List of all running containers$(P_NC)\n"
 	@docker container ls
 
+# Show list of all Docker containers, images, volumes, and networks
 showAll:
 	@printf "$(LF)$(D_PURPLE)* List all running and sleeping containers$(P_NC)\n"
 	@$(CMD) ps
@@ -26,14 +30,20 @@ showAll:
 	@printf "$(LF)$(D_PURPLE)* List all networks$(P_NC)\n"
 	@docker network ls
 
+# Watch changes in the specified volumes directory
 watch:
 	@watch -n 1 ls -la $(VOLUMES)
+
+# Show all Docker containers, images, volumes, and networks every second
 watchC:
 	@$(CMD) ps -a; $(CMD) images
 	@docker volume ls; docker network ls 
-# ------------ GIT UTILS ------------
+
+# Add all changes to git
 gAdd:
 	@echo $(CYAN) && git add .
+
+# Commit changes to git with an editor
 gCommit:
 	@echo $(GREEN) && git commit -e ; \
 	ret=$$?; \
@@ -41,6 +51,8 @@ gCommit:
 		echo $(RED) "Error in commit message"; \
 		exit 1; \
 	fi
+
+# Push changes to git, set upstream branch if needed
 gPush:
 	@echo $(YELLOW) && git push ; \
 	ret=$$? ; \
@@ -52,9 +64,11 @@ gPush:
 			exit 1; \
 		fi \
 	fi
+
+# Add, commit, and push changes to git
 git: gAdd gCommit gPush
 
-# --------------------------------------#
+# Encrypt the secrets directory
 encrypt:
 	@rm -f .tmp.enc .tmp.tar.gz
 	@tar -czf .tmp.tar.gz secrets/
@@ -69,6 +83,7 @@ encrypt:
 	fi'
 	@rm .tmp.tar.gz\
 
+# Decrypt the encrypted secrets file
 decrypt:
 	@bash -c ' \
 	read -sp "Enter decryption key: " DECRYPTION_KEY; \
@@ -88,22 +103,29 @@ decrypt:
 		exit 1; \
 	fi'
 
+# List all service directories and volumes
 list:
 	@find services/ -type d -name '*-service'
 	@ls -Rla $(VOLUMES)
 
+# Show user and group IDs
 id:
 	cat /etc/subuid | grep $(USER)
 	cat /etc/subgid | grep $(USER)
 	id -u; id -g
 	cat ~/.config/docker/daemon.json
 
+# Create a temporary labeled Alpine Docker image
 alpine:
 	@docker run --name temp-alpine alpine:latest sleep 1
 	@docker commit --change "LABEL keep=true" temp-alpine alpine:latest-labeled
 	@docker rm temp-alpine
+
+# Remove all SSL certificates
 rmCert:
 	rm -rf ./secrets/ssl/*
+
+# Generate SSL certificates using mkcert
 cert:
 	$(call createDir,$(SSL))
 	@HOST=$(shell hostname -s) ; \
@@ -114,11 +136,11 @@ cert:
 		docker run --rm --privileged --hostname $(shell hostname) -v $(SSL):/certs -it alpine:latest sh -c 'apk add --no-cache nss-tools curl ca-certificates && curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64" && mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert && chmod +x /usr/local/bin/mkcert && mkcert -install && mkcert -key-file /certs/$(shell hostname -s).key -cert-file /certs/$(shell hostname -s).crt $(shell hostname) $(shell hostname -i) localhost 127.0.0.1 && cp /root/.local/share/mkcert/rootCA.pem /certs/rootCA.pem' ; \
 	fi
 
-#  
+# Generate SSL certificates using Certbot
 cerbot:
 	$(call createDir,$(SSL))
 	@HOST=$(shell hostname -s) ; \
-	if [ -f $(SSL)/$$HOST.key ] && [ -f $(SSL)/$$HOST.crt ]; then \
+	if [ -f $(SSL)/$$HOST.key ] && [ -f $(SSL)/$$HOST.crt]; then \
 		printf "$(LF)  🟢 $(P_BLUE)Certificates already exists $(P_NC)\n"; \
 	else \
 		rm -rf $(SSL)/*; \
