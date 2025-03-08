@@ -2,11 +2,11 @@ entryPoints:
   web:
     address: ":80"
     # allowACMEByPass: true
-    http:
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
+    # http:
+    #   redirections:
+    #     entryPoint:
+    #       to: websecure
+    #       scheme: https
     forwardedHeaders:
       trustedIPs:
         - "0.0.0.0/0"
@@ -17,7 +17,7 @@ entryPoints:
       maxConcurrentStreams: 250
     http:
       tls:
-        # certResolver: myresolver
+        certResolver: myresolver
         domains:
           - main: "{{ env 'DOMAIN' }}"
             sans:
@@ -33,9 +33,9 @@ providers:
   docker:
     exposedByDefault: false
     endpoint: "unix:///var/run/docker.sock"
-#   file:
-#     filename: /etc/traefik/dynamic_conf.yml
-#     watch: true
+  file:
+    filename: /etc/traefik/ #dynamic_conf.yml
+    watch: true
 
 # self certificates
 tls:
@@ -55,19 +55,25 @@ tls:
       cipherSuites:
         - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
         - TLS_RSA_WITH_AES_256_GCM_SHA384
-      clientAuth:
-        caFiles:
-          - "/run/secrets/ssl_pem"
-        clientAuthType: RequireAndVerifyClientCert
+      # clientAuth: #not neccesary as we only make sure 
+      #   caFiles:
+      #     - "/run/secrets/ssl_pem"
+        # clientAuthType: RequireAndVerifyClientCert
 
 # acme let's encrypt certificates
 certificatesResolvers:
   myresolver:
     acme:
-      email: " lilizarr@student.42wolfsburg.de"
-      # email: "/run/secrets/ssl_email"
-      storage: "/etc/traefik/acme.json"
-      tlsChallenge: {}
+      caServer: "https://pebble:14000/dir"
+      email: "test@example.com"
+      storage: "/acme.json"
+      httpChallenge:
+        entryPoint: web
+    # acme:
+    #   email: " lilizarr@student.42wolfsburg.de"
+    #   # email: "/run/secrets/ssl_email"
+    #   storage: "/etc/traefik/acme.json"
+    #   tlsChallenge: {}
 
 log:
   level: DEBUG

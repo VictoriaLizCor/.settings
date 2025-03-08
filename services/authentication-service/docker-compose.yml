@@ -1,0 +1,41 @@
+volumes:
+  authentication-vol:
+    driver: local
+    name: authentication-vol
+    # driver_opts:
+    #   type: bind
+    #   o: bind
+    #   device: ./
+
+# networks:
+#   backend:
+#     external: true
+
+services:
+  authentication:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        - DNS_SERVER=8.8.8.8
+    container_name: authentication
+    hostname: authentication
+    volumes:
+      - authentication-vol:/usr/src/app
+    # working_dir: /usr/src/app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      DOMAIN: ${DOMAIN}
+      IP: ${IP}
+      DOMAIN_TEST: ${DOMAIN_TEST}
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      - frontend
+    labels:
+      - "traefik.enable=true"
+      # Router for canonical domain requests (highest priority)
+      - "traefik.http.routers.authentication.rule=Host(`authentication.${DOMAIN}`)"
+      - "traefik.http.routers.authenticationl.entrypoints=websecure"

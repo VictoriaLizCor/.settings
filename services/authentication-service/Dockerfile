@@ -5,7 +5,7 @@ WORKDIR /app
 COPY src/package*.json ./
 RUN npm install --include=dev
 
-COPY . .
+COPY src .
 
 EXPOSE 3000
 

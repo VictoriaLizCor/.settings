@@ -8,12 +8,6 @@ secrets:
   ssl_email:
     file: ${SSL_EMAIL}
 
-# networks:
-#   backend:
-#     external: true
-#   frontend:
-#     external: true
-
 volumes:
   traefik-logs:
     driver: local
@@ -70,17 +64,33 @@ services:
     networks:
       - frontend
       - backend
+      # - game # will handle wss?
     restart: unless-stopped
     command:
       - "traefik"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
       - "--api.dashboard=true"
       - "--log.level=DEBUG"
+      - "--certificatesresolvers.test.acme.caserver=https://pebble:14000/dir"
+      - "--certificatesresolvers.test.acme.email=test@example.com"
+      - "--certificatesresolvers.test.acme.storage=/acme.json"
+      # - "--entrypoints.web.address=:80"
+      # - "--entrypoints.websecure.address=:443"
     # labels:
     #   - traefik.enable=true
     #   - "traefik.http.routers.traefik.rule=Host(`${DOMAIN}`) || Host(`${IP}`) || Host(`127.0.0.1`)"  # Updated domain address
     #   - "traefik.http.routers.traefik.entrypoints=web,websecure"
     #   - "traefik.http.routers.traefik.middlewares=redirect-to-newdomain@file"
+
+  pebble:
+    image: letsencrypt/pebble
+    container_name: pebble
+    hostname: pebble
+    environment:
+      - PEBBLE_VA_NOSLEEP=1
+    ports:
+      - "14000:14000" # Pebble ACME server
+      - "15000:15000" # Pebble challenge server
+    networks:
+      - backend
