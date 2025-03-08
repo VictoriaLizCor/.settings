@@ -1,7 +1,4 @@
 {
-	// 
-	//***************************************************//
-	// Add this to your settings.json
 	"[windows]":
 	{
 		"editor.fontSize": 17.7,
@@ -14,7 +11,6 @@
 		"editor.fontSize": 14.0,
 		"window.zoomLevel": 0.5
 	},
-	"window.zoomLevel": 0.4,
 	"editor.fontSize": 14,
 	"window.zoomLevel": -0.6,
 	// "debug.console.fontSize": 20,
@@ -40,19 +36,22 @@
 	], // Compiler options
 	"compiler-explorer.debug": true,
 	"compiler-explorer.include": [
-		// "${workspaceFolder}/,
-		
+		// "${workspaceFolder}/CPP_01/ex04/src/${workspaceFolder}/CPP_01/ex04/src/main.cpp",
+		//	"${workspaceFolder}/CPP_00/ex01/src/${workspaceFolder}/CPP_00/ex01/src/my_awesome_phonebook.cpp"
 	],
 	"window.customTitleBarVisibility": "auto",
 	"rewrap.wrappingColumn": 70,
-	"C_Cpp.dimInactiveRegions": false,
 	 // indicates that the extension will print debug to its output channel.
 	"doxdocgen.generic.commandSuggestionAddPrefix": true,
 	"files.exclude":
 	{
-		//"**/CPP_08": true
+		"**/.git": true,
+		"**/.git*": false
 	},
 	"github.copilot.editor.enableAutoCompletions": false,
 	"pdf-preview.default.sidebar": false,
-	"files.associations": {},
+	"files.associations": {
+		//
+	},
+
 }
