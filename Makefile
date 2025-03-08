@@ -4,13 +4,7 @@ include $(SETTINGS)/colors.mk
 CURRENT_PATH := $(PWD)/
 HOOKS := $(SETTINGS)gitHooks/
 #make -p -f Makefile | grep -E '^[a-zA-Z0-9_-]+:'
-
-# check if .git is a folder(main repo) o file(submodule)
-ifneq ($(shell test -f .git && echo yes),)
-SETTINGS-HOOKS := $(realpath $(shell cat $(SETTINGS).git | awk '{ print $$2 }'))/hooks
-else
-SETTINGS-HOOKS := $(abspath $(shell cat $(SETTINGS).git | awk '{ print $$2 }'))
-endif
+#  
 
 GIT-HOOKS := $(PROJECT_ROOT).git/hooks
 
@@ -19,10 +13,6 @@ define set_hook
 	@file="$1"; \
 	hooks=$(GIT-HOOKS); \
 	toSet=$$(echo $$hooks/$$file | awk -F'/' '{print $$(NF-3)"/"$$(NF-2)"/"$$(NF-1)"/"$$NF}'); \
-	if [ "$(CURRENT_PATH)" = "$(SETTINGS)" ]; then \
-		hooks=$(SETTINGS-HOOKS); \
-		toSet=$$(echo $$hooks/$$file | awk -F'/' '{print $$(NF-4)"/"$$(NF-3)"/"$$(NF-2)"/"$$(NF-1)"/"$$NF}'); \
-	fi; \
 	echo Setting:$(PURPLE) $$toSet $(E_NC); \
 	cp $(HOOKS)$$file $$hooks; \
 	chmod +x $$hooks/$$file; \
@@ -33,21 +23,13 @@ define set_hook
 	echo $(GREEN)"$$file hook installed."$(E_NC)
 endef
 
-### Maybe use for branches
-#@for subdir in $$(find $(DIRS) -type d -name "ex0*" | sort); do \
-	echo "\t"$(GRAY) $$subdir $(E_NC); \
-	done;
-all:
+# all:
 
 settings:
-	@echo $(shell pwd)
+	@echo PWD: $(PWD)
 	@echo PROJECT_ROOT: $(CYAN) $(PROJECT_ROOT) $(E_NC)
 	@echo Git-hooks: $(CYAN) $(GIT-HOOKS) $(E_NC)
 	@echo SETTINGS: $(YELLOW) $(SETTINGS) $(E_NC)
-	@echo SETTINGS-hooks: $(MAG) $(SETTINGS-HOOKS) $(E_NC)
-	@echo DIRS: $(BOLD) $(DIRS) $(E_NC)
-	
-
 .gitconfig:
 	@git config --local --list
 
@@ -70,25 +52,10 @@ post-merge:
 show-pwd:
 	@echo PWD:$(YELLOW) $(CURRENT_PATH) $(E_NC)
 
-set-hooks: show-pwd pre-commit commit-msg post-merge
+set-hooks: show-pwd commit-template pre-commit commit-msg post-merge
 
-#------------------------- submodules
-fetch-settings:
-	@git submodule update --remote
-	@echo "Submodule updated to the latest commit."
-
-update-settings: show-pwd
-	@if [ "$(CURRENT_PATH)" != "$(SETTINGS)" ]; then \
-		cd $(SETTINGS); \
-	fi && \
-	$(MAKE) -C . git
-
-#@git add $(SETTINGS)
 
 #-------------------------VS Code
-.vscode:
-	@cp -r $(SETTINGS).vscode .
-
 gAdd:
 	@echo $(CYAN) && git add .
 
@@ -110,18 +77,8 @@ gPush:
 		fi \
 	fi
 
-check-settings:
-	@if [ "$(CURRENT_PATH)" != "$(SETTINGS)" ]; then \
-		echo "Checking if submodule was modified..."; \
-		if [ -n "$$(git diff --submodule)" ]; then \
-			$(MAKE) -C . update-settings; \
-			SUBMODULE_COMMIT_MESSAGE=$$(git log -1 --pretty=%B); \
-			echo "$$SUBMODULE_COMMIT_MESSAGE" && cd .. > /dev/null; \
-		fi \
-	fi
-
 git: show-pwd
-	@$(MAKE) -C . check-settings gAdd gCommit; \
+	@$(MAKE) -C . gAdd gCommit; \
 	ret=$$?; \
 	if [ $$ret -ne 0 ]; then \
 		exit 1; \
@@ -149,6 +106,7 @@ soft:
 		echo $(RED) "Last commit reset" $(E_NC) ;; \
 		* ) echo $(MAG) "No changes made" $(E_NC) ;; \
 	esac
+
 amend:
 	@echo $(CYAN) && git commit --amend; \
 	result=$$?; \
