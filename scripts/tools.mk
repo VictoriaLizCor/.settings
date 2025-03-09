@@ -14,6 +14,11 @@ define createDir
 	fi
 endef
 
+restartDocker:
+	@echo "Stopping rootless Docker..."
+	-pkill -f dockerd-rootless.sh || echo "Docker is not running."
+runDocker: restartDocker
+	sh scripts/runDockerRootless.sh
 # Show list of all running Docker containers
 show:
 	@printf "$(LF)$(D_PURPLE)* List of all running containers$(P_NC)\n"

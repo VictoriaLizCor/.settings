@@ -42,15 +42,40 @@ configure_rootless_networking() {
     REQUIRED_KEY="net.ipv4.ip_unprivileged_port_start"
     REQUIRED_VALUE="80"
 
+    # Check current runtime value
     CURRENT_VALUE=$(sysctl -n $REQUIRED_KEY 2>/dev/null)
     if [ "$CURRENT_VALUE" == "$REQUIRED_VALUE" ]; then
         echo "✔ $REQUIRED_KEY is already set to $REQUIRED_VALUE."
     else
-        echo "✖ $REQUIRED_KEY is not set to $REQUIRED_VALUE. Updating sysctl configuration..."
-        echo "$REQUIRED_KEY=$REQUIRED_VALUE" | sudo tee -a /etc/sysctl.conf > /dev/null
-        sudo sysctl -p
-        sysctl $REQUIRED_KEY
+        echo "✖ $REQUIRED_KEY is not set to $REQUIRED_VALUE. Updating runtime configuration..."
+        sudo sysctl -w $REQUIRED_KEY=$REQUIRED_VALUE
     fi
+
+    # Check if the setting already exists in /etc/sysctl.conf
+    if ! grep -q "^$REQUIRED_KEY=$REQUIRED_VALUE" /etc/sysctl.conf; then
+        echo "✔ Adding $REQUIRED_KEY to /etc/sysctl.conf..."
+        echo "$REQUIRED_KEY=$REQUIRED_VALUE" | sudo tee -a /etc/sysctl.conf > /dev/null
+    else
+        echo "✔ $REQUIRED_KEY is already present in /etc/sysctl.conf."
+    fi
+}
+
+
+# Function to configure DNS for Docker
+configure_docker_dns() {
+    DNS_FILE="$HOME/.config/docker/daemon.json"
+    DNS_SERVERS='{"dns": ["8.8.8.8", "1.1.1.1"]}'
+
+    mkdir -p "$(dirname "$DNS_FILE")"
+
+    if [ -f "$DNS_FILE" ]; then
+        echo "✔ DNS configuration file already exists. Updating..."
+    else
+        echo "✔ Creating DNS configuration file for Docker..."
+    fi
+
+    echo "$DNS_SERVERS" > "$DNS_FILE"
+    echo "✔ DNS servers added to $DNS_FILE."
 }
 
 # Main execution flow
@@ -74,5 +99,8 @@ start_rootless_docker
 
 # Configure networking for rootless mode
 configure_rootless_networking
+
+# Configure DNS for Docker
+configure_docker_dns
 
 echo "Docker setup complete. Verify connectivity by running 'docker info' or starting your containers."

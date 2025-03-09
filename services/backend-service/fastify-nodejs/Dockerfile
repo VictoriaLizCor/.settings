@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:23-alpine
 
 # Set build argument for DNS server
 ARG DNS_SERVER=8.8.8.8
