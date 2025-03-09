@@ -37,5 +37,5 @@ services:
     labels:
       - "traefik.enable=true"
       # Router for canonical domain requests (highest priority) 
-      - "traefik.http.routers.front-end.rule=Host(`front-end.${DOMAIN}`)"
+      - "traefik.http.routers.front-end.rule=Host(`front-end.${DOMAIN}`) || Host(`front-end.localhost`) || Host(`front-end.${IP}`)"
       - "traefik.http.routers.front-endl.entrypoints=websecure"
