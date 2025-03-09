@@ -36,10 +36,10 @@ REMOTE_URL=$(git config --get remote.origin.url)
 REPO_NAME=$(echo "$REMOTE_URL" | sed -n 's#.*/\([^/]*\)\.git#\1#p')
 
 # Get organization members
-MEMBERS=$(curl -s -H "Authorization: token `cat $TOKEN`" -H "Accept: application/vnd.github+json" https://api.github.com/orgs/FT-Transcendence-February-2025/members | jq -r '.[].login' | awk '{printf "\"%s\", ", $0}' | sed 's/, $/\n/')
-LABELS=$(curl -s -H "Authorization: token `cat $TOKEN`" \
-	-H "Accept: application/vnd.github.v3+json" \
-	https://api.github.com/repos/FT-Transcendence-February-2025/FT_Transcendence/labels | jq -r '.[].name' | awk '{printf "\"%s\", ", $0}' | sed 's/, $/\n/')
+# MEMBERS=$(curl -s -H "Authorization: token `cat $TOKEN`" -H "Accept: application/vnd.github+json" https://api.github.com/orgs/FT-Transcendence-February-2025/members | jq -r '.[].login' | awk '{printf "\"%s\", ", $0}' | sed 's/, $/\n/')
+# LABELS=$(curl -s -H "Authorization: token `cat $TOKEN`" \
+# 	-H "Accept: application/vnd.github.v3+json" \
+# 	https://api.github.com/repos/FT-Transcendence-February-2025/FT_Transcendence/labels | jq -r '.[].name' | awk '{printf "\"%s\", ", $0}' | sed 's/, $/\n/')
 
 # Get the current user's GitHub username
 GIT_GLOBAL=$(git config --global --get user.name)
