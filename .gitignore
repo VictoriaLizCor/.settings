@@ -14,3 +14,4 @@ secrets/
 # services/game-service
 # services/nginx-service
 # services/user-management-service
+.settings/
